@@ -1,0 +1,38 @@
+import React from 'react';
+
+export default function LegalModal({ title, isOpen, onClose, children }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+      <div 
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-fade-in-up">
+        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-xl font-black text-slate-900">{title}</h2>
+          <button 
+            onClick={onClose}
+            className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-all"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="p-8 max-h-[70vh] overflow-y-auto text-slate-600 leading-relaxed space-y-4">
+          {children}
+        </div>
+        <div className="px-8 py-6 bg-slate-50 text-right">
+          <button 
+            onClick={onClose}
+            className="btn-primary"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
