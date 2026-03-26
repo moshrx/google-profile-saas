@@ -106,15 +106,15 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           category: formData.category,
           city: formData.city,
           full_kit: `
-DESCRIPTION: ${result.longDescription}
+DESCRIPTION: ${result.longDescription || 'N/A'}
 ---
-POSTS: ${result.googlePosts.join("\n\n---\n\n")}
+POSTS: ${(result.googlePosts || []).join("\n\n---\n\n")}
 ---
-REVIEWS: Positive: ${result.reviewResponses.positive}
+REVIEWS: Positive: ${result.reviewResponses?.positive || 'N/A'}
 ---
 FAQs: ${(result.faqs || []).map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n")}
 ---
-KEYWORDS: ${result.competitorKeywords.primary.join(", ")} | ${result.competitorKeywords.local.join(", ")}
+KEYWORDS: ${(result.competitorKeywords?.primary || []).join(", ")} | ${(result.competitorKeywords?.local || []).join(", ")}
 ---
 PHOTO TIPS: ${(result.photoTips || []).join("\n")}`,
         }),
@@ -413,7 +413,7 @@ PHOTO TIPS: ${(result.photoTips || []).join("\n")}`,
         </div>
 
         {/* Website Upsell Banner */}
-        <div className="mt-20 bg-slate-900 rounded-[3rem] p-8 md:p-16 shadow-2xl text-white overflow-hidden relative group">
+        <div className="mt-20 bg-slate-900 rounded-[2.5rem] p-6 md:p-16 shadow-2xl text-white overflow-hidden relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-primary-600/20 via-transparent to-accent-600/20 pointer-events-none"></div>
           <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-primary-500/10 blur-[100px] rounded-full group-hover:bg-primary-500/20 transition-colors duration-700"></div>
           
@@ -455,7 +455,7 @@ PHOTO TIPS: ${(result.photoTips || []).join("\n")}`,
               </div>
             </div>
 
-            <div className="glass-dark border-white/5 p-8 md:p-10 rounded-[2rem]">
+            <div className="glass-dark border-white/5 p-6 md:p-10 rounded-[2rem]">
               {websiteLeadSent ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-12">
                   <div className="w-20 h-20 bg-primary-500/20 text-primary-400 rounded-full flex items-center justify-center text-4xl mb-6 animate-bounce">✨</div>
