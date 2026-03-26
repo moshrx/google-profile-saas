@@ -13,41 +13,34 @@ export default defineConfig({
     })
   ],
   build: {
-    // Enable minification with Terser for better compression
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-      },
-      mangle: {
-        safari10: true,
-      },
-    },
     // Code splitting configuration
     rollupOptions: {
       output: {
-        // Manual chunks for better caching
-        manualChunks: {
-          // React core
-          'react-vendor': ['react', 'react-dom'],
-          // Utilities
-          'utils': ['jspdf', 'html2canvas'],
+        manualChunks(id) {
+          // React core vendor chunk
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // Utility libraries chunk
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
+            return 'utils';
+          }
         },
         // Chunk naming strategy
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.')
-          const ext = info[info.length - 1]
+          // Safety check for asset name
+          if (!assetInfo.name) {
+            return 'assets/[hash][extname]';
+          }
           if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(assetInfo.name)) {
-            return 'assets/images/[name]-[hash][extname]'
+            return 'assets/images/[name]-[hash][extname]';
           }
           if (/\.css$/.test(assetInfo.name)) {
-            return 'assets/css/[name]-[hash][extname]'
+            return 'assets/css/[name]-[hash][extname]';
           }
-          return 'assets/[name]-[hash][extname]'
+          return 'assets/[name]-[hash][extname]';
         },
       },
     },
@@ -55,8 +48,8 @@ export default defineConfig({
     target: 'es2020',
     // CSS optimization
     cssMinify: true,
-    // Asset optimization
-    assetsInlineLimit: 4096, // 4kb - inline smaller assets
+    // Asset optimization - inline smaller assets
+    assetsInlineLimit: 4096,
     // Chunk size warnings
     chunkSizeWarningLimit: 500,
     // Source maps for production (disable for maximum performance)
@@ -65,11 +58,5 @@ export default defineConfig({
   // Optimize dependencies pre-bundling
   optimizeDeps: {
     include: ['react', 'react-dom', 'jspdf', 'html2canvas'],
-    exclude: [],
-  },
-  // Server configuration for development
-  server: {
-    // Enable compression in dev
-    compress: true,
   },
 })
