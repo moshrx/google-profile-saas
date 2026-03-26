@@ -217,7 +217,7 @@ function App() {
             <p className="font-bold text-slate-900 pt-4">2. Cookies</p>
             <p>We use essential functional cookies to manage your session. We do not use tracking or advertising cookies.</p>
             <p className="font-bold text-slate-900 pt-4">3. Third-Party Services</p>
-            <p>We use Google Gemini AI and Web3Forms. Please refer to their respective privacy policies for how they handle data.</p>
+            <p>We use Google Gemini AI and EmailJS. Please refer to their respective privacy policies for how they handle data.</p>
           </div>
         </LegalModal>
 
