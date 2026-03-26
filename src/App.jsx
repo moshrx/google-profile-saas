@@ -24,14 +24,14 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center">
-          <div className="card max-w-md p-8 shadow-xl border-t-4 border-red-500">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 text-center">
+          <div className="card max-w-md p-6 sm:p-8 shadow-xl border-t-4 border-red-500">
             <div className="text-4xl mb-4">⚠️</div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">Something went wrong</h2>
-            <p className="text-slate-500 mb-6 font-medium">The application encountered a rendering error. This usually happens if the AI returns incomplete data.</p>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-2">Something went wrong</h2>
+            <p className="text-slate-500 mb-6 font-medium text-sm sm:text-base">The application encountered a rendering error. This usually happens if the AI returns incomplete data.</p>
             <button
               onClick={() => window.location.reload()}
-              className="btn-primary w-full bg-slate-800 hover:bg-slate-900"
+              className="btn-primary w-full bg-slate-800 hover:bg-slate-900 text-sm"
             >
               Reload Application
             </button>
@@ -44,14 +44,13 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  const [page, setPage] = useState("home"); // home, form, loading, results, admin
+  const [page, setPage] = useState("home");
   const [formData, setFormData] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
   const [initialWantsMockup, setInitialWantsMockup] = useState(false);
 
-  // Simple state-based router for /admin path
   useEffect(() => {
     if (window.location.pathname === "/admin/leads") {
       setPage("admin");
@@ -70,7 +69,7 @@ function App() {
     } catch (err) {
       console.error("Generation Error:", err);
       setError(err.message || "Failed to generate profile. Please check your API key.");
-      setPage("form"); // Go back to form on error
+      setPage("form");
     }
   };
 
@@ -101,25 +100,25 @@ function App() {
       case "form":
         return (
           <div className="animate-fade-in">
-            <div className="fixed top-8 left-8 z-[60]">
+            <div className="fixed top-4 sm:top-8 left-4 sm:left-8 z-[60]">
               <button 
                 onClick={handleReset}
-                className="flex items-center gap-2 text-slate-400 font-bold hover:text-slate-900 transition-all group"
+                className="flex items-center gap-2 text-slate-400 font-bold hover:text-slate-900 transition-all group tap-target"
               >
-                <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </div>
-                <span className="hidden md:block">Exit to Home</span>
+                <span className="hidden md:block text-sm">Exit to Home</span>
               </button>
             </div>
             
             {error && (
-              <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[60] w-full max-w-md px-6 pointer-events-none">
-                <div className="bg-red-500 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce shadow-red-500/20 pointer-events-auto">
-                  <span className="text-xl">⚠️</span>
-                  <p className="font-bold text-sm">{error}</p>
+              <div className="fixed top-4 sm:top-8 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] max-w-md px-4 pointer-events-none">
+                <div className="bg-red-500 text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 animate-bounce shadow-red-500/20 pointer-events-auto">
+                  <span className="text-lg sm:text-xl">⚠️</span>
+                  <p className="font-bold text-xs sm:text-sm">{error}</p>
                 </div>
               </div>
             )}
@@ -156,6 +155,8 @@ function App() {
             onOpenLegal={setActiveModal} 
           />
         )}
+        
+        {page === "home" && <FloatingBadge />}
       </ErrorBoundary>
 
       <LegalModal 
@@ -163,12 +164,14 @@ function App() {
         isOpen={activeModal === 'privacy'} 
         onClose={() => setActiveModal(null)}
       >
-        <p className="font-bold text-slate-900">1. Data Collection</p>
-        <p>ListedPEI is committed to protecting your privacy. We do not store the business details you enter in our profile generation form. Everything is processed in transient memory.</p>
-        <p className="font-bold text-slate-900 pt-4">2. Cookies</p>
-        <p>We use essential functional cookies to manage your session. We do not use tracking or advertising cookies.</p>
-        <p className="font-bold text-slate-900 pt-4">3. Third-Party Services</p>
-        <p>We use Google Gemini AI and Web3Forms. Please refer to their respective privacy policies for how they handle data.</p>
+        <div className="text-sm sm:text-base space-y-4">
+          <p className="font-bold text-slate-900">1. Data Collection</p>
+          <p>ListedPEI is committed to protecting your privacy. We do not store the business details you enter in our profile generation form. Everything is processed in transient memory.</p>
+          <p className="font-bold text-slate-900 pt-4">2. Cookies</p>
+          <p>We use essential functional cookies to manage your session. We do not use tracking or advertising cookies.</p>
+          <p className="font-bold text-slate-900 pt-4">3. Third-Party Services</p>
+          <p>We use Google Gemini AI and Web3Forms. Please refer to their respective privacy policies for how they handle data.</p>
+        </div>
       </LegalModal>
 
       <LegalModal 
@@ -176,10 +179,12 @@ function App() {
         isOpen={activeModal === 'terms'} 
         onClose={() => setActiveModal(null)}
       >
-        <p className="font-bold text-slate-900">1. Acceptance of Terms</p>
-        <p>By using ListedPEI, you agree to these terms. Our service is provided "as is" for informational purposes.</p>
-        <p className="font-bold text-slate-900 pt-4">2. AI-Generated Content</p>
-        <p>Content is generated by AI. While we optimize for local SEO, we do not guarantee search rankings. Review all text before publishing.</p>
+        <div className="text-sm sm:text-base space-y-4">
+          <p className="font-bold text-slate-900">1. Acceptance of Terms</p>
+          <p>By using ListedPEI, you agree to these terms. Our service is provided "as is" for informational purposes.</p>
+          <p className="font-bold text-slate-900 pt-4">2. AI-Generated Content</p>
+          <p>Content is generated by AI. While we optimize for local SEO, we do not guarantee search rankings. Review all text before publishing.</p>
+        </div>
       </LegalModal>
     </div>
   );

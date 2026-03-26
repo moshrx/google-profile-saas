@@ -31,33 +31,101 @@
 }
 
 .card {
-  @apply bg-white rounded-[2rem] p-6 md:p-12 shadow-premium border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1;
+  @apply bg-white rounded-2xl md:rounded-[2rem] p-4 sm:p-6 md:p-8 lg:p-12 shadow-premium border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1;
 }
 
 .input-field {
-  @apply w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-transparent text-slate-800 font-medium 
-  transition-all duration-300 placeholder:text-slate-400
-  focus:bg-white focus:border-primary-500 focus:ring-8 focus:ring-primary-500/5 outline-none;
+  @apply w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-transparent text-slate-800 font-medium 
+  transition-all duration-300 placeholder:text-slate-400 text-sm sm:text-base
+  focus:bg-white focus:border-primary-500 focus:ring-4 sm:focus:ring-8 focus:ring-primary-500/5 outline-none;
 }
 
 .btn-primary {
-  @apply relative inline-flex items-center justify-center gap-2 bg-slate-900 text-white font-bold px-8 py-4 
-  rounded-2xl transition-all duration-300 hover:bg-primary-600 hover:-translate-y-1 active:translate-y-0 
-  shadow-xl shadow-slate-900/10 hover:shadow-primary-500/20 font-display;
+  @apply relative inline-flex items-center justify-center gap-2 bg-slate-900 text-white font-bold 
+  px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-primary-600 hover:-translate-y-1 active:translate-y-0 
+  shadow-xl shadow-slate-900/10 hover:shadow-primary-500/20 font-display text-sm sm:text-base whitespace-nowrap;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white text-slate-700 font-bold 
-  border border-slate-200 transition-all duration-300 hover:bg-slate-50 hover:border-slate-300 shadow-sm font-display;
+  @apply inline-flex items-center justify-center gap-2 px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-white text-slate-700 font-bold 
+  border border-slate-200 transition-all duration-300 hover:bg-slate-50 hover:border-slate-300 shadow-sm font-display text-sm sm:text-base whitespace-nowrap;
 }
 
 .nav-link {
-  @apply text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200;
+  @apply text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200 text-sm md:text-base;
+}
+
+/* Mobile menu animation */
+.mobile-menu-enter {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive text utilities */
+.text-responsive-hero {
+  @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl;
+}
+
+.text-responsive-section {
+  @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+}
+
+.text-responsive-card {
+  @apply text-lg sm:text-xl md:text-2xl;
+}
+
+/* Safe area for mobile */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Touch-friendly tap targets */
+.tap-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+/* Horizontal scroll container for mobile */
+.scroll-x {
+  @apply overflow-x-auto -mx-4 px-4 pb-4;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Grid responsive helpers */
+.grid-responsive-2 {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8;
+}
+
+.grid-responsive-3 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8;
+}
+
+.grid-responsive-4 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -65,5 +133,28 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full border-4 border-transparent bg-clip-content hover:bg-slate-300;
+  @apply bg-slate-200 rounded-full border-2 border-transparent bg-clip-content hover:bg-slate-300;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 640px) {
+  .card-result {
+    @apply p-4;
+  }
+  
+  /* Prevent zoom on input focus on iOS */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
