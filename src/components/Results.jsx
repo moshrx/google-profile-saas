@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import emailjs from '@emailjs/browser';
 import { useToast, ToastContainer } from "./Toast";
 
 /**
@@ -69,6 +70,12 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
     return localStorage.getItem('listedpei_feedback') ? true : false;
   });
 
+  // EmailJS configuration
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+  const kitTemplateId = import.meta.env.VITE_EMAILJS_KIT_TEMPLATE_ID;
+  const leadTemplateId = import.meta.env.VITE_EMAILJS_LEAD_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
   // Guard for missing data
   if (!result || !formData) {
     return (
@@ -83,109 +90,93 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
     );
   }
 
-  // Handle Send Kit Email via Web3Forms
+  // Handle Send Kit Email via EmailJS
   const handleSendKitEmail = async (e) => {
     e.preventDefault();
     if (!email) return;
 
-    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
-    if (!accessKey || accessKey === "your_access_key_here") {
-      addToast("Web3Forms Access Key not set in .env", "error");
+    // Check if EmailJS is configured
+    if (!serviceId || serviceId === "your_service_id") {
+      addToast("EmailJS not configured. Please check .env file.", "error");
       return;
     }
 
     setIsSendingEmail(true);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: accessKey,
-          subject: `${formData.businessName} — Your ListedPEI Profile Kit`,
-          from_name: "ListedPEI",
-          reply_to: "peiwebstudio@gmail.com",
-          to: email, // ← Send TO the customer's email
-          business_name: formData.businessName,
-          category: formData.category,
-          city: formData.city,
-          full_kit: `
-DESCRIPTION: ${result.longDescription || 'N/A'}
----
-POSTS: ${(result.googlePosts || []).join("\n\n---\n\n")}
----
-REVIEWS: Positive: ${result.reviewResponses?.positive || 'N/A'}
----
-FAQs: ${(result.faqs || []).map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n")}
----
-KEYWORDS: ${(result.competitorKeywords?.primary || []).join(", ")} | ${(result.competitorKeywords?.local || []).join(", ")}
----
-PHOTO TIPS: ${(result.photoTips || []).join("\n")}`,
-        }),
-      });
+      const templateParams = {
+        to_email: email,
+        to_name: formData.businessName,
+        from_name: "ListedPEI",
+        reply_to: "peiwebstudio@gmail.com",
+        business_name: formData.businessName,
+        category: formData.category,
+        city: formData.city,
+        long_description: result.longDescription || 'N/A',
+        short_description: result.shortDescription || 'N/A',
+        google_posts: (result.googlePosts || []).join("\n\n---\n\n"),
+        review_positive: result.reviewResponses?.positive || 'N/A',
+        review_neutral: result.reviewResponses?.neutral || 'N/A',
+        review_negative: result.reviewResponses?.negative || 'N/A',
+        faqs: (result.faqs || []).map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n"),
+        keywords_primary: (result.competitorKeywords?.primary || []).join(", "),
+        keywords_local: (result.competitorKeywords?.local || []).join(", "),
+        keywords_longtail: (result.competitorKeywords?.longTail || []).join(", "),
+        photo_tips: (result.photoTips || []).join("\n"),
+        categories: (result.categories || []).join(", "),
+      };
 
-      const res = await response.json();
-      
-      if (res.success) {
-        const leads = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
-        leads.push({ email, businessName: formData.businessName, category: formData.category, city: formData.city, timestamp: new Date().toISOString() });
-        localStorage.setItem("listedpei_leads", JSON.stringify(leads));
+      await emailjs.send(serviceId, kitTemplateId, templateParams, publicKey);
 
-        addToast("Kit request sent successfully!");
-        setEmail("");
-      } else {
-        throw new Error("Web3Forms error");
-      }
+      // Save to localStorage for admin
+      const leads = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
+      leads.push({ email, businessName: formData.businessName, category: formData.category, city: formData.city, timestamp: new Date().toISOString() });
+      localStorage.setItem("listedpei_leads", JSON.stringify(leads));
+
+      addToast("Kit sent to your email successfully!");
+      setEmail("");
     } catch (err) {
-      console.error(err);
-      addToast("Failed to send kit. Check your .env setup.", "error");
+      console.error("EmailJS Error:", err);
+      addToast("Failed to send email. Please try again.", "error");
     } finally {
       setIsSendingEmail(false);
     }
   };
 
-  // Handle Website Lead via Web3Forms
+  // Handle Website Lead via EmailJS
   const handleWebsiteLeadSubmit = async (e) => {
     e.preventDefault();
 
-    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
-    if (!accessKey) {
-       addToast("Access Key missing", "error");
-       return;
+    if (!serviceId || serviceId === "your_service_id") {
+      addToast("EmailJS not configured. Please check .env file.", "error");
+      return;
     }
 
     setIsSendingWebsiteLead(true);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: accessKey,
-          subject: `🚀 Website Mockup Requested: ${formData.businessName}`,
-          from_name: websiteLead.name,
-          email: websiteLead.email,
-          phone: websiteLead.phone,
-          website_status: websiteLead.status,
-          message: websiteLead.message,
-          business_name: formData.businessName
-        }),
-      });
+      const templateParams = {
+        to_email: "peiwebstudio@gmail.com", // Send lead to you
+        from_name: websiteLead.name,
+        from_email: websiteLead.email,
+        reply_to: websiteLead.email,
+        business_name: formData.businessName,
+        phone: websiteLead.phone || "Not provided",
+        website_status: websiteLead.status,
+        message: websiteLead.message,
+      };
 
-      const res = await response.json();
+      await emailjs.send(serviceId, leadTemplateId, templateParams, publicKey);
 
-      if (res.success) {
-        const leads = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
-        leads.push({ ...websiteLead, businessName: formData.businessName, timestamp: new Date().toISOString() });
-        localStorage.setItem("listedpei_website_leads", JSON.stringify(leads));
+      // Save to localStorage
+      const leads = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
+      leads.push({ ...websiteLead, businessName: formData.businessName, timestamp: new Date().toISOString() });
+      localStorage.setItem("listedpei_website_leads", JSON.stringify(leads));
 
-        setWebsiteLeadSent(true);
-        addToast("Website mockup request sent!");
-      } else {
-        throw new Error("Web3Forms error");
-      }
+      setWebsiteLeadSent(true);
+      addToast("Website mockup request sent!");
     } catch (err) {
-      console.error(err);
+      console.error("EmailJS Error:", err);
       addToast("Request failed — please try again later.", "error");
     } finally {
       setIsSendingWebsiteLead(false);
