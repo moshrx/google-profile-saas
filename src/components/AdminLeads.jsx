@@ -7,7 +7,9 @@ const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
  */
 export default function AdminLeads() {
   const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    sessionStorage.getItem("listedpei_admin_auth") === "true"
+  );
   const [activeTab, setActiveTab] = useState("kit"); // kit or website
   const [kitLeads, setKitLeads] = useState([]);
   const [websiteLeads, setWebsiteLeads] = useState([]);
@@ -24,9 +26,16 @@ export default function AdminLeads() {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
+      sessionStorage.setItem("listedpei_admin_auth", "true");
     } else {
       alert("Incorrect password");
+      setPassword("");
     }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem("listedpei_admin_auth");
   };
 
   const exportCSV = (type) => {
@@ -70,24 +79,45 @@ export default function AdminLeads() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6 text-center">Admin Dashboard</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <div className="w-full max-w-md glass-dark border-white/10 p-10 rounded-[2rem] shadow-2xl relative z-10 animate-fade-in-up">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-slate-800 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-inner border border-white/5">
+              <svg className="w-8 h-8 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight">Admin Gateway</h1>
+            <p className="text-slate-400 text-sm mt-2">Enter credentials to securely view leads.</p>
+          </div>
+          
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Admin Password</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block ml-1">Master Password</label>
               <input
                 type="password"
-                className="input-field border-slate-200"
-                placeholder="Enter password"
+                className="w-full bg-slate-900/50 border border-white/10 text-white placeholder-slate-500 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <button type="submit" className="w-full btn-primary bg-slate-800 hover:bg-slate-900 py-4">
-              Unlock Leads →
+            <button type="submit" className="w-full py-3 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-colors shadow-lg shadow-primary-500/20 active:scale-95 flex items-center justify-center gap-2">
+              Unlock Gateway
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </form>
+          
+          <div className="mt-8 text-center border-t border-white/5 pt-6">
+            <button onClick={() => window.location.href = "/"} className="text-slate-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest">
+              ← Return Home
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -102,11 +132,14 @@ export default function AdminLeads() {
             <p className="text-slate-500 font-medium">Manage and export your collected potential customers.</p>
           </div>
           <div className="flex items-center gap-3">
-             <button onClick={() => exportCSV(activeTab)} className="btn-primary bg-emerald-600 hover:bg-emerald-700">
+             <button onClick={() => exportCSV(activeTab)} className="btn-primary bg-emerald-600 hover:bg-emerald-700 py-2">
                Export {activeTab.toUpperCase()} CSV
              </button>
-             <button onClick={clearLeads} className="text-xs font-bold text-red-500 hover:text-red-700 uppercase tracking-widest">
-               Clear All
+             <button onClick={clearLeads} className="text-[10px] font-black text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg uppercase tracking-widest transition-colors">
+               Clear
+             </button>
+             <button onClick={handleLogout} className="text-[10px] font-black text-slate-500 hover:text-slate-900 bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg uppercase tracking-widest transition-colors">
+               Logout
              </button>
           </div>
         </div>

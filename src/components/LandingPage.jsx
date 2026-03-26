@@ -138,33 +138,44 @@ export default function LandingPage({ onGetStarted }) {
             Google Profile kits. Get found, get chosen, and get growing.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <button
-              onClick={onGetStarted}
-              className="btn-primary w-full sm:w-auto text-lg group"
-            >
-              Generate Your Profile Kit
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" />
+          <div className="flex flex-col items-center justify-center animate-fade-in-up gap-3" style={{ animationDelay: '0.2s' }}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <button
+                onClick={() => onGetStarted(false)}
+                className="btn-primary w-full sm:w-auto text-lg group"
+              >
+                Generate Your Profile Kit
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" />
+                  </div>
+                ))}
+                <div className="flex items-center ml-4">
+                  <div className="flex text-amber-400">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="ml-2 text-sm font-bold text-slate-600">500+ Local Businesses</span>
                 </div>
-              ))}
-              <div className="flex items-center ml-4">
-                <div className="flex text-amber-400">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="ml-2 text-sm font-bold text-slate-600">500+ Local Businesses</span>
               </div>
             </div>
+            
+            {/* Secondary CTA for Website Mockup */}
+            <button 
+              onClick={() => onGetStarted(true)} 
+              className="text-slate-500 font-medium hover:text-primary-600 transition-colors text-sm flex items-center gap-1 group mt-2"
+            >
+              Don't have a website? Get a free mockup 
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
           </div>
         </div>
 
@@ -265,6 +276,7 @@ export default function LandingPage({ onGetStarted }) {
           </div>
         </div>
       </section>
+
       {/* ── FAQ Section ─────────────────────────────────────────────────── */}
       <section id="faq" className="py-24 px-6 relative">
         <div className="max-w-4xl mx-auto">

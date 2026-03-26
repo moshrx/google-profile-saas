@@ -65,9 +65,9 @@ const initialForm = {
   wantsWebsiteMockup: false,
 };
 
-export default function StepForm({ onSubmit }) {
+export default function StepForm({ onSubmit, initialWantsMockup = false }) {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState(initialForm);
+  const [formData, setFormData] = useState({ ...initialForm, wantsWebsiteMockup: initialWantsMockup });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
@@ -193,10 +193,15 @@ export default function StepForm({ onSubmit }) {
             <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl shadow-inner-light">
               {STEPS[step].icon}
             </div>
-            <div>
-              <p className="text-[10px] font-black text-primary-600 uppercase tracking-[0.2em] mb-1">
-                Step {step + 1} of {STEPS.length}
-              </p>
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-1">
+                <p className="text-[10px] font-black text-primary-600 uppercase tracking-[0.2em]">
+                  Step {step + 1} of {STEPS.length}
+                </p>
+                <div className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
+                  Step {step + 1} / 4
+                </div>
+              </div>
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">{STEPS[step].label}</h2>
             </div>
           </div>
@@ -305,18 +310,27 @@ export default function StepForm({ onSubmit }) {
                     <p className="mt-1 text-xs text-slate-400">If you have an existing site, we'll pull details from it.</p>
                   </div>
                   
-                  <div className="mt-2 flex items-start gap-3 p-3 bg-primary-50/50 border border-primary-100 rounded-xl">
-                    <input
-                      id="wantsWebsite"
-                      type="checkbox"
-                      className="mt-1 h-4 w-4 rounded border-primary-300 text-primary-600 focus:ring-primary-600 cursor-pointer"
-                      checked={formData.wantsWebsiteMockup}
-                      onChange={(e) => handleChange("wantsWebsiteMockup", e.target.checked)}
-                    />
-                    <label htmlFor="wantsWebsite" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
-                      I don't have a website (or need a new one). <br/>
-                      <span className="text-primary-700 font-bold">Get a FREE mockup from PEI Web Studio! 🚀</span>
-                    </label>
+                  <div className="mt-2 flex flex-col gap-2 p-4 bg-primary-50/50 border border-primary-100 rounded-xl relative group">
+                    <div className="flex items-start gap-3">
+                      <input
+                        id="wantsWebsite"
+                        type="checkbox"
+                        className="mt-1 h-4 w-4 rounded border-primary-300 text-primary-600 focus:ring-primary-600 cursor-pointer"
+                        checked={formData.wantsWebsiteMockup}
+                        onChange={(e) => handleChange("wantsWebsiteMockup", e.target.checked)}
+                      />
+                      <label htmlFor="wantsWebsite" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
+                        I don't have a website (or need a new one). <br/>
+                        <span className="text-primary-700 font-bold">Get a FREE mockup from PEI Web Studio! 🚀</span>
+                      </label>
+                    </div>
+                    {/* Tooltip Explanation */}
+                    <div className="ml-7 flex items-center gap-2 text-xs text-primary-600/80 font-medium">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      We'll create a visual preview of your new website based on your business details.
+                    </div>
                   </div>
                 </>
               )}

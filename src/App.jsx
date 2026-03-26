@@ -3,6 +3,7 @@ import StepForm from "./components/StepForm";
 import Loading from "./components/LoadingScreen";
 import Results from "./components/Results";
 import AdminLeads from "./components/AdminLeads";
+import FloatingBadge from "./components/FloatingBadge";
 import { generateProfile } from "./utils/generateProfile";
 import { exportPDF } from "./utils/exportPDF";
 import LandingPage from "./components/LandingPage";
@@ -48,6 +49,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
+  const [initialWantsMockup, setInitialWantsMockup] = useState(false);
 
   // Simple state-based router for /admin path
   useEffect(() => {
@@ -82,7 +84,8 @@ function App() {
     }
   };
 
-  const startForm = () => {
+  const startForm = (wantsMockup = false) => {
+    setInitialWantsMockup(wantsMockup);
     setPage("form");
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -121,7 +124,7 @@ function App() {
               </div>
             )}
             
-            <StepForm onSubmit={handleFormSubmit} />
+            <StepForm onSubmit={handleFormSubmit} initialWantsMockup={initialWantsMockup} />
           </div>
         );
       case "loading":
