@@ -1,0 +1,22 @@
+{
+  "name": "ListedPEI - Free Google Business Profile Kits",
+  "short_name": "ListedPEI",
+  "description": "Generate SEO-optimized Google Business Profile content for PEI small businesses",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFBFF",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en-CA",
+  "dir": "ltr"
+}

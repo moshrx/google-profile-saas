@@ -4,6 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     
+    <!-- Performance: DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://consent.cookiebot.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    
+    <!-- Performance: Preconnect for critical origins -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://consent.cookiebot.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Cookiebot Consent Banner -->
     <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="08e798c2-901c-4b42-9688-524d3ab44f1d" type="text/javascript" async></script>
     
@@ -15,11 +27,16 @@
       gtag('js', new Date());
       gtag('config', 'G-2LY4R8Q2K4');
     </script>
+    
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0ea5e9" />
-
+    
+    <!-- Performance: Preload critical resources -->
+    <link rel="preload" href="/src/main.jsx" as="script" type="module" crossorigin>
+    
     <!-- Primary Meta Tags -->
     <title>Free Google Business Profile Kits for PEI Small Businesses | ListedPEI</title>
     <meta name="title" content="Free Google Business Profile Kits for PEI Small Businesses | ListedPEI" />
@@ -58,10 +75,19 @@
     }
     </script>
     
-    <!-- Premium Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Performance: Critical CSS inlined -->
+    <style>
+      /* Critical CSS for above-the-fold content */
+      *,*::before,*::after{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4}
+      body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background-color:#FAFBFF}
+      #root{min-height:100vh}
+      .font-display{font-family:Outfit,sans-serif}
+    </style>
+    
+    <!-- Fonts: Load with display=swap for performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   </head>
   <body class="selection:bg-primary-100 selection:text-primary-700">
     <div id="root"></div>
