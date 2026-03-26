@@ -102,10 +102,11 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           access_key: accessKey,
-          subject: `${formData.businessName} — New GBP Kit Generated`,
-          from_name: "ListedPEI App",
+          subject: `${formData.businessName} — Your ListedPEI Profile Kit`,
+          from_name: "ListedPEI",
+          reply_to: "peiwebstudio@gmail.com",
+          to: email, // ← Send TO the customer's email
           business_name: formData.businessName,
-          customer_email: email,
           category: formData.category,
           city: formData.city,
           full_kit: `
