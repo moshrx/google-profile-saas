@@ -1,5 +1,5 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import React, { useState, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 // Lazy load components for code splitting
 const StepForm = lazy(() => import("./components/StepForm"));
@@ -11,10 +11,12 @@ const Footer = lazy(() => import("./components/Footer"));
 const LegalModal = lazy(() => import("./components/LegalModal"));
 const FloatingBadge = lazy(() => import("./components/FloatingBadge"));
 const GrantQuiz = lazy(() => import("./components/GrantQuiz"));
+const PickUpAI = lazy(() => import("./components/PickUpAI"));
 
 // Import utilities (these are smaller, can be loaded eagerly)
 import { generateProfile } from "./utils/generateProfile";
 import { exportPDF } from "./utils/exportPDF";
+import { PrivacyPolicyContent, TermsOfServiceContent } from "./components/LegalContent";
 
 // Loading fallback component
 function PageLoader() {
@@ -83,17 +85,12 @@ function AppContent() {
   const [activeModal, setActiveModal] = useState(null);
   const [initialWantsMockup, setInitialWantsMockup] = useState(false);
 
-  // Check for admin route and legacy routing
-  useEffect(() => {
-    if (location.pathname === "/admin/leads") {
-      setPage("admin");
-    } else if (location.pathname === "/grants") {
-      // Let the router handle this
-    } else if (location.pathname === "/" && page !== "home") {
-      // Reset to home when navigating to root
-      handleReset();
-    }
-  }, [location.pathname]);
+  const handleReset = () => {
+    setFormData(null);
+    setResult(null);
+    setError(null);
+    setPage("home");
+  };
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -111,20 +108,13 @@ function AppContent() {
     }
   };
 
-  const handleReset = () => {
-    setFormData(null);
-    setResult(null);
-    setError(null);
-    setPage("home");
-  };
-
   const startForm = (wantsMockup = false) => {
     setInitialWantsMockup(wantsMockup);
     setPage("form");
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const isSimpleFooter = page === "form" || page === "loading" || page === "results" || location.pathname === "/grants";
+  const isSimpleFooter = page === "form" || page === "loading" || page === "results" || location.pathname === "/grants" || location.pathname === "/pickupai";
   const isHome = page === "home" && location.pathname === "/";
 
   return (
@@ -134,6 +124,11 @@ function AppContent() {
           <Route path="/grants" element={
             <Suspense fallback={<PageLoader />}>
               <GrantQuiz />
+            </Suspense>
+          } />
+          <Route path="/pickupai" element={
+            <Suspense fallback={<PageLoader />}>
+              <PickUpAI />
             </Suspense>
           } />
           <Route path="/admin/leads" element={
@@ -158,7 +153,7 @@ function AppContent() {
           } />
         </Routes>
         
-        {!location.pathname.startsWith("/admin") && location.pathname !== "/grants" && (
+        {!location.pathname.startsWith("/admin") && location.pathname !== "/grants" && location.pathname !== "/pickupai" && (
           <Suspense fallback={null}>
             <Footer 
               simple={isSimpleFooter} 
@@ -175,32 +170,20 @@ function AppContent() {
       </ErrorBoundary>
 
       <Suspense fallback={null}>
-        <LegalModal 
-          title="Privacy Policy" 
-          isOpen={activeModal === 'privacy'} 
+        <LegalModal
+          title="Privacy Policy"
+          isOpen={activeModal === 'privacy'}
           onClose={() => setActiveModal(null)}
         >
-          <div className="text-sm sm:text-base space-y-4">
-            <p className="font-bold text-slate-900">1. Data Collection</p>
-            <p>ListedPEI is committed to protecting your privacy. We do not store the business details you enter in our profile generation form. Everything is processed in transient memory.</p>
-            <p className="font-bold text-slate-900 pt-4">2. Cookies</p>
-            <p>We use essential functional cookies to manage your session. We do not use tracking or advertising cookies.</p>
-            <p className="font-bold text-slate-900 pt-4">3. Third-Party Services</p>
-            <p>We use Google Gemini AI and EmailJS. Please refer to their respective privacy policies for how they handle data.</p>
-          </div>
+          <PrivacyPolicyContent />
         </LegalModal>
 
-        <LegalModal 
-          title="Terms of Service" 
-          isOpen={activeModal === 'terms'} 
+        <LegalModal
+          title="Terms of Service"
+          isOpen={activeModal === 'terms'}
           onClose={() => setActiveModal(null)}
         >
-          <div className="text-sm sm:text-base space-y-4">
-            <p className="font-bold text-slate-900">1. Acceptance of Terms</p>
-            <p>By using ListedPEI, you agree to these terms. Our service is provided "as is" for informational purposes.</p>
-            <p className="font-bold text-slate-900 pt-4">2. AI-Generated Content</p>
-            <p>Content is generated by AI. While we optimize for local SEO, we do not guarantee search rankings. Review all text before publishing.</p>
-          </div>
+          <TermsOfServiceContent />
         </LegalModal>
       </Suspense>
     </div>
@@ -209,14 +192,6 @@ function AppContent() {
 
 // Main content component for home routes
 function MainContent({ page, formData, result, error, initialWantsMockup, handleFormSubmit, handleReset, startForm, onExportPDF }) {
-  if (page === "admin") {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <AdminLeads onBack={handleReset} />
-      </Suspense>
-    );
-  }
-
   switch (page) {
     case "home":
       return (

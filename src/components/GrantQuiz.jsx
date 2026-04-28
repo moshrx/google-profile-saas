@@ -407,8 +407,6 @@ Matched Grants: ${matched.map(g => g.name).join(", ") || "No specific grants mat
   // Render Email Capture (after step 5)
   if (currentStep === TOTAL_STEPS - 1 && answers[QUIZ_STEPS[TOTAL_STEPS - 1].id]) {
     // If they've answered the last question, show email capture
-    const lastStepId = QUIZ_STEPS[TOTAL_STEPS - 1].id;
-    
     return (
       <div className="min-h-screen bg-[#FAFBFF] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-24 sm:pt-6">
         <ToastContainer toasts={toasts} />
