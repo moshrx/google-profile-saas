@@ -66,6 +66,7 @@ const GRANTS = [
   {
     id: "web-presence",
     name: "Web Presence Assistance Program",
+    url: "https://www.princeedwardisland.ca/en/topic/small-business-incentives",
     description: "Get up to 50% of your website development costs covered. Perfect for businesses looking to establish or improve their online presence.",
     maxAmount: "50% of eligible costs",
     eligibility: {
@@ -81,6 +82,7 @@ const GRANTS = [
   {
     id: "business-development",
     name: "Business Development Support",
+    url: "https://www.princeedwardisland.ca/en/service/small-business-assistance-program",
     description: "Financial assistance for business planning, market research, and professional consulting services to help grow your business.",
     maxAmount: "Up to $5,000",
     eligibility: {
@@ -96,6 +98,7 @@ const GRANTS = [
   {
     id: "digital-adoption",
     name: "Digital Adoption Support",
+    url: "https://www.princeedwardisland.ca/en/service/small-business-investment-grant",
     description: "Funding to help small businesses adopt new digital technologies, software, and tools to improve operations and reach new customers.",
     maxAmount: "Up to $2,500",
     eligibility: {
@@ -113,6 +116,17 @@ const GRANTS = [
 // Calculate matched grants based on answers
 function calculateMatchedGrants(answers) {
   return GRANTS.filter((grant) => {
+    // Special case: exclude Web Presence Assistance for users who already have a website
+    // or whose funding goal is not website-related
+    if (grant.id === "web-presence") {
+      if (answers.website === "yes" || answers.website === "progress") {
+        return false;
+      }
+      if (answers.fundingGoal !== "website" && answers.fundingGoal !== "multiple") {
+        return false;
+      }
+    }
+
     const matches = {
       businessType: grant.eligibility.businessType.includes(answers.businessType),
       businessAge: grant.eligibility.businessAge.includes(answers.businessAge),
@@ -150,16 +164,16 @@ export default function GrantQuiz() {
   };
 
   const handleNext = () => {
+    if (currentStep >= TOTAL_STEPS) return;
+
     const stepId = QUIZ_STEPS[currentStep].id;
     if (!answers[stepId]) {
       addToast("Please select an option to continue", "error");
       return;
     }
     
-    if (currentStep < TOTAL_STEPS - 1) {
-      setCurrentStep((s) => s + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setCurrentStep((s) => s + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBack = () => {
@@ -327,7 +341,7 @@ Matched Grants: ${matched.map(g => g.name).join(", ") || "No specific grants mat
                         {grant.description}
                       </p>
                       <a
-                        href="https://www.princeedwardisland.ca/en/information/innovation-pei"
+                        href={grant.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-primary-600 font-bold text-sm hover:text-primary-700 transition-colors"
@@ -405,7 +419,7 @@ Matched Grants: ${matched.map(g => g.name).join(", ") || "No specific grants mat
   }
 
   // Render Email Capture (after step 5)
-  if (currentStep === TOTAL_STEPS - 1 && answers[QUIZ_STEPS[TOTAL_STEPS - 1].id]) {
+  if (currentStep === TOTAL_STEPS) {
     // If they've answered the last question, show email capture
     return (
       <div className="min-h-screen bg-[#FAFBFF] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-24 sm:pt-6">
@@ -612,18 +626,19 @@ Matched Grants: ${matched.map(g => g.name).join(", ") || "No specific grants mat
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 gap-3">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className={`btn-secondary ${currentStep === 0 ? "opacity-40 cursor-not-allowed hover:translate-y-0" : ""} flex-1 sm:flex-none`}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </button>
+          <div className={`flex items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 gap-3 ${currentStep > 0 ? 'justify-between' : 'justify-end'}`}>
+            {currentStep > 0 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="btn-secondary flex-1 sm:flex-none"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+            )}
 
             <button
               type="button"
