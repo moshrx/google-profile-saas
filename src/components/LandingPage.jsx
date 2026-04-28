@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import Testimonials from './Testimonials';
 
@@ -120,6 +121,9 @@ export default function LandingPage({ onGetStarted }) {
               <button onClick={() => scrollToSection('how-it-works')} className="nav-link">How it works</button>
               <button onClick={() => scrollToSection('features')} className="nav-link">Features</button>
               <button onClick={() => scrollToSection('faq')} className="nav-link">FAQ</button>
+              <Link to="/grants" className="nav-link text-primary-600 hover:text-primary-700 font-bold">
+                Free Grant Check
+              </Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -154,6 +158,13 @@ export default function LandingPage({ onGetStarted }) {
                 <button onClick={() => scrollToSection('how-it-works')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">How it works</button>
                 <button onClick={() => scrollToSection('features')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">Features</button>
                 <button onClick={() => scrollToSection('faq')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">FAQ</button>
+                <Link 
+                  to="/grants" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="nav-link py-3 px-4 rounded-xl hover:bg-primary-50 text-left text-primary-600 font-bold"
+                >
+                  Free Grant Check
+                </Link>
                 <hr className="border-slate-200 my-2" />
                 <button
                   onClick={() => { onGetStarted(); setMobileMenuOpen(false); }}
