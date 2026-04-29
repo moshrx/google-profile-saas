@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import Testimonials from './Testimonials';
 
@@ -102,15 +103,46 @@ export default function LandingPage({ onGetStarted }) {
 
   return (
     <div className="min-h-screen bg-[#FAFBFF] selection:bg-primary-500/10 selection:text-primary-700 overflow-x-hidden">
-      
+
       {/* ── Background Elements ─────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[40%] h-[40%] bg-primary-200/20 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow"></div>
         <div className="absolute bottom-[-5%] right-[-5%] w-[50%] sm:w-[30%] h-[30%] bg-accent-200/20 blur-[60px] sm:blur-[100px] rounded-full animate-float"></div>
       </div>
 
+      {/* ── Announcement Banner ─────────────────────────────────────────── */}
+      <Link
+        to="/pickupai"
+        className="fixed top-0 left-0 right-0 z-[60] block bg-gradient-to-r from-[#C34A36] via-primary-600 to-accent-600 text-white overflow-hidden"
+      >
+        <div className="relative px-4 py-2.5 sm:py-2.5">
+          {/* Shimmer sweep */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_ease-in-out_infinite]"></div>
+          {/* Mobile: stacked layout */}
+          <div className="flex flex-col items-center gap-1 text-center sm:hidden">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse">New</span>
+              <span className="text-xs font-black">PickUp AI — Free 1-Week Trial</span>
+            </div>
+            <p className="text-[11px] font-medium text-white/90 leading-tight">
+              AI phone agent that answers calls 24/7. Tap to claim yours →
+            </p>
+          </div>
+          {/* Desktop: single row */}
+          <div className="hidden sm:flex items-center justify-center gap-3">
+            <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse shrink-0">New</span>
+            <p className="text-sm font-bold">
+              Try <span className="font-black">PickUp AI</span> free for 1 week — an AI phone agent that answers calls 24/7 for your PEI business.
+            </p>
+            <span className="shrink-0 bg-white text-[#C34A36] font-black text-xs px-3 py-1 rounded-full whitespace-nowrap">
+              Claim Trial →
+            </span>
+          </div>
+        </div>
+      </Link>
+
       {/* ── Navigation ──────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-3 sm:py-4">
+      <header className="fixed top-[52px] sm:top-[40px] left-0 right-0 z-50 px-4 sm:px-6 py-3 sm:py-4">
         <nav className="max-w-7xl mx-auto">
           <div className="glass rounded-2xl sm:rounded-[1.5rem] px-4 sm:px-6 py-3 flex items-center justify-between">
             <Logo />
@@ -120,6 +152,9 @@ export default function LandingPage({ onGetStarted }) {
               <button onClick={() => scrollToSection('how-it-works')} className="nav-link">How it works</button>
               <button onClick={() => scrollToSection('features')} className="nav-link">Features</button>
               <button onClick={() => scrollToSection('faq')} className="nav-link">FAQ</button>
+              <Link to="/grants" className="nav-link text-primary-600 hover:text-primary-700 font-bold">
+                Free Grant Check
+              </Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -154,6 +189,13 @@ export default function LandingPage({ onGetStarted }) {
                 <button onClick={() => scrollToSection('how-it-works')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">How it works</button>
                 <button onClick={() => scrollToSection('features')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">Features</button>
                 <button onClick={() => scrollToSection('faq')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">FAQ</button>
+                <Link 
+                  to="/grants" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="nav-link py-3 px-4 rounded-xl hover:bg-primary-50 text-left text-primary-600 font-bold"
+                >
+                  Free Grant Check
+                </Link>
                 <hr className="border-slate-200 my-2" />
                 <button
                   onClick={() => { onGetStarted(); setMobileMenuOpen(false); }}
@@ -168,18 +210,18 @@ export default function LandingPage({ onGetStarted }) {
       </header>
 
       {/* ── Hero Section ─────────────────────────────────────────────────── */}
-      <section className="relative pt-28 sm:pt-32 md:pt-40 pb-12 sm:pb-20 px-4 sm:px-6">
+      <section className="relative pt-40 sm:pt-40 md:pt-48 pb-12 sm:pb-20 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full glass border-white/40 mb-6 sm:mb-8 animate-fade-in">
             <span className="flex h-2 w-2 rounded-full bg-primary-500"></span>
             <span className="text-xs sm:text-sm font-bold text-slate-600 tracking-wide uppercase">Built for Prince Edward Island</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 leading-[1.1] mb-6 sm:mb-8 animate-fade-in-up px-2">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 leading-[1.1] mb-6 sm:mb-8 animate-fade-in-up px-2">
             Master your <span className="text-gradient">Google Presence</span> in seconds.
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-8 sm:mb-12 animate-fade-in-up px-4" style={{ animationDelay: '0.1s' }}>
+          <p className="text-sm sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-8 sm:mb-12 animate-fade-in-up px-4" style={{ animationDelay: '0.1s' }}>
             The all-in-one AI tool for PEI small businesses to generate high-converting 
             Google Profile kits. Get found, get chosen, and get growing.
           </p>
@@ -235,8 +277,8 @@ export default function LandingPage({ onGetStarted }) {
             { title: "100% Free", desc: "Zero cost for island businesses" }
           ].map((item, idx) => (
             <div key={idx} className="glass p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-center">
-              <h3 className="text-lg sm:text-xl font-black text-slate-900 mb-2">{item.title}</h3>
-              <p className="text-slate-500 font-medium text-sm sm:text-base">{item.desc}</p>
+              <h3 className="text-base sm:text-xl font-black text-slate-900 mb-2">{item.title}</h3>
+              <p className="text-slate-500 font-medium text-xs sm:text-base">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -252,7 +294,7 @@ export default function LandingPage({ onGetStarted }) {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 sm:mb-20 gap-6">
             <div className="max-w-2xl">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4 sm:mb-6 underline decoration-primary-300 underline-offset-8">
+              <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4 sm:mb-6 underline decoration-primary-300 underline-offset-8">
                 Everything you need to <br className="hidden sm:block" /> dominate local search
               </h2>
               <p className="text-base sm:text-lg text-slate-500">
@@ -284,8 +326,8 @@ export default function LandingPage({ onGetStarted }) {
                   <div className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary-600 mb-4 sm:mb-6 group-hover:scale-110 group-hover:bg-white group-hover:shadow-xl transition-all duration-300">
                     {feature.icon}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">{feature.title}</h3>
-                  <p className="text-slate-500 leading-relaxed text-sm sm:text-base">{feature.description}</p>
+                  <h3 className="text-base sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">{feature.title}</h3>
+                  <p className="text-slate-500 leading-relaxed text-xs sm:text-base">{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -297,7 +339,7 @@ export default function LandingPage({ onGetStarted }) {
       <section id="how-it-works" className="py-16 sm:py-24 px-4 sm:px-6 bg-slate-900 text-white relative rounded-3xl sm:rounded-[4rem] mx-4 sm:mx-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-20">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-4 sm:mb-6">Simple, Fast, & <span className="text-primary-400">Effective</span></h2>
+            <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-4 sm:mb-6">Simple, Fast, & <span className="text-primary-400">Effective</span></h2>
             <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto px-4">
               We've distilled hours of SEO work into a 3-minute process.
               No complex settings, just results.
@@ -313,8 +355,8 @@ export default function LandingPage({ onGetStarted }) {
                 <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center text-slate-900 font-display font-black text-xl sm:text-2xl mb-6 sm:mb-8 mx-auto lg:mx-0 relative z-10 group-hover:scale-110 transition-transform duration-300 group-hover:bg-primary-500 group-hover:text-white group-hover:shadow-[0_0_30px_rgba(14,165,233,0.5)]">
                   {item.step}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{item.title}</h3>
-                <p className="text-slate-400 leading-relaxed text-base sm:text-lg">{item.description}</p>
+                <h3 className="text-base sm:text-2xl font-bold mb-3 sm:mb-4">{item.title}</h3>
+                <p className="text-slate-400 leading-relaxed text-sm sm:text-lg">{item.description}</p>
               </div>
             ))}
           </div>
@@ -322,7 +364,7 @@ export default function LandingPage({ onGetStarted }) {
           <div className="mt-12 sm:mt-20 text-center">
             <button
               onClick={onGetStarted}
-              className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl sm:rounded-2xl font-black text-base sm:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-primary-500/20 active:scale-95"
+              className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl sm:rounded-2xl font-black text-sm sm:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-primary-500/20 active:scale-95"
             >
               Start Building Now — It's Free
             </button>
@@ -334,8 +376,8 @@ export default function LandingPage({ onGetStarted }) {
       <section id="faq" className="py-16 sm:py-24 px-4 sm:px-6 relative">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-slate-500 text-base sm:text-lg">Everything you need to know about ListedPEI.</p>
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-slate-500 text-sm sm:text-lg">Everything you need to know about ListedPEI.</p>
           </div>
           <div className="space-y-4 sm:space-y-6">
             {[
@@ -345,8 +387,8 @@ export default function LandingPage({ onGetStarted }) {
               { q: "Why focus only on PEI?", a: "Local search is all about relevance. By focusing on the Island, we can provide much more accurate and effective SEO results than generic tools." }
             ].map((faq, idx) => (
               <div key={idx} className="glass p-6 sm:p-8 rounded-2xl sm:rounded-3xl">
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">{faq.q}</h3>
-                <p className="text-slate-500 leading-relaxed text-sm sm:text-base">{faq.a}</p>
+                <h3 className="text-base sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">{faq.q}</h3>
+                <p className="text-slate-500 leading-relaxed text-xs sm:text-base">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -356,10 +398,10 @@ export default function LandingPage({ onGetStarted }) {
       {/* ── Final CTA ─────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 relative">
         <div className="max-w-4xl mx-auto text-center glass p-8 sm:p-12 md:p-16 rounded-3xl sm:rounded-[4rem] border-primary-100/50">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 sm:mb-8">Ready to boost your local ranking?</h2>
+          <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 sm:mb-8">Ready to boost your local ranking?</h2>
           <button
             onClick={onGetStarted}
-            className="btn-primary text-base sm:text-xl px-8 sm:px-12 py-4 sm:py-5 w-full sm:w-auto"
+            className="btn-primary text-sm sm:text-xl px-8 sm:px-12 py-4 sm:py-5 w-full sm:w-auto"
           >
             Get My Free Kit Now
           </button>

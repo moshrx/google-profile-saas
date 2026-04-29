@@ -1,4 +1,5 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 // Lazy load components for code splitting
 const StepForm = lazy(() => import("./components/StepForm"));
@@ -9,10 +10,13 @@ const LandingPage = lazy(() => import("./components/LandingPage"));
 const Footer = lazy(() => import("./components/Footer"));
 const LegalModal = lazy(() => import("./components/LegalModal"));
 const FloatingBadge = lazy(() => import("./components/FloatingBadge"));
+const GrantQuiz = lazy(() => import("./components/GrantQuiz"));
+const PickUpAI = lazy(() => import("./components/PickUpAI"));
 
 // Import utilities (these are smaller, can be loaded eagerly)
 import { generateProfile } from "./utils/generateProfile";
 import { exportPDF } from "./utils/exportPDF";
+import { PrivacyPolicyContent, TermsOfServiceContent } from "./components/LegalContent";
 
 // Loading fallback component
 function PageLoader() {
@@ -62,7 +66,18 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Main App Component with Router
 function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
+// Inner component that uses router hooks
+function AppContent() {
+  const location = useLocation();
   const [page, setPage] = useState("home");
   const [formData, setFormData] = useState(null);
   const [result, setResult] = useState(null);
@@ -70,12 +85,12 @@ function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [initialWantsMockup, setInitialWantsMockup] = useState(false);
 
-  // Check for admin route
-  useEffect(() => {
-    if (window.location.pathname === "/admin/leads") {
-      setPage("admin");
-    }
-  }, []);
+  const handleReset = () => {
+    setFormData(null);
+    setResult(null);
+    setError(null);
+    setPage("home");
+  };
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -93,112 +108,61 @@ function App() {
     }
   };
 
-  const handleReset = () => {
-    setFormData(null);
-    setResult(null);
-    setError(null);
-    setPage("home");
-    if (window.location.pathname === "/admin/leads") {
-      window.history.pushState({}, "", "/");
-    }
-  };
-
   const startForm = (wantsMockup = false) => {
     setInitialWantsMockup(wantsMockup);
     setPage("form");
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderPage = () => {
-    if (page === "admin") {
-      return (
-        <Suspense fallback={<PageLoader />}>
-          <AdminLeads onBack={handleReset} />
-        </Suspense>
-      );
-    }
-
-    switch (page) {
-      case "home":
-        return (
-          <Suspense fallback={<PageLoader />}>
-            <LandingPage onGetStarted={startForm} />
-          </Suspense>
-        );
-      case "form":
-        return (
-          <div className="animate-fade-in">
-            <div className="fixed top-4 sm:top-8 left-4 sm:left-8 z-[60]">
-              <button 
-                onClick={handleReset}
-                className="flex items-center gap-2 text-slate-400 font-bold hover:text-slate-900 transition-all group tap-target"
-              >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </div>
-                <span className="hidden md:block text-sm">Exit to Home</span>
-              </button>
-            </div>
-            
-            {error && (
-              <div className="fixed top-4 sm:top-8 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] max-w-md px-4 pointer-events-none">
-                <div className="bg-red-500 text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 animate-bounce shadow-red-500/20 pointer-events-auto">
-                  <span className="text-lg sm:text-xl">⚠️</span>
-                  <p className="font-bold text-xs sm:text-sm">{error}</p>
-                </div>
-              </div>
-            )}
-            
-            <Suspense fallback={<PageLoader />}>
-              <StepForm onSubmit={handleFormSubmit} initialWantsMockup={initialWantsMockup} />
-            </Suspense>
-          </div>
-        );
-      case "loading":
-        return (
-          <Suspense fallback={<PageLoader />}>
-            <Loading businessName={formData?.businessName} />
-          </Suspense>
-        );
-      case "results":
-        return (
-          <Suspense fallback={<PageLoader />}>
-            <Results
-              result={result}
-              formData={formData}
-              onReset={handleReset}
-              onExportPDF={(res, form) => exportPDF(res, form)}
-            />
-          </Suspense>
-        );
-      default:
-        return (
-          <Suspense fallback={<PageLoader />}>
-            <LandingPage onGetStarted={startForm} />
-          </Suspense>
-        );
-    }
-  };
+  const isSimpleFooter = page === "form" || page === "loading" || page === "results" || location.pathname === "/grants" || location.pathname === "/pickupai";
+  const isHome = page === "home" && location.pathname === "/";
 
   return (
-    <div className="App font-outfit min-h-screen flex flex-col">
+    <div className="App font-display min-h-screen flex flex-col">
       <ErrorBoundary>
-        <main className="flex-1">
-          {renderPage()}
-        </main>
+        <Routes>
+          <Route path="/grants" element={
+            <Suspense fallback={<PageLoader />}>
+              <GrantQuiz />
+            </Suspense>
+          } />
+          <Route path="/pickupai" element={
+            <Suspense fallback={<PageLoader />}>
+              <PickUpAI />
+            </Suspense>
+          } />
+          <Route path="/admin/leads" element={
+            <Suspense fallback={<PageLoader />}>
+              <AdminLeads onBack={handleReset} />
+            </Suspense>
+          } />
+          <Route path="/*" element={
+            <MainContent 
+              page={page}
+              setPage={setPage}
+              formData={formData}
+              result={result}
+              error={error}
+              setError={setError}
+              initialWantsMockup={initialWantsMockup}
+              handleFormSubmit={handleFormSubmit}
+              handleReset={handleReset}
+              startForm={startForm}
+              onExportPDF={exportPDF}
+            />
+          } />
+        </Routes>
         
-        {page !== "admin" && (
+        {!location.pathname.startsWith("/admin") && location.pathname !== "/grants" && location.pathname !== "/pickupai" && (
           <Suspense fallback={null}>
             <Footer 
-              simple={page === "form" || page === "loading" || page === "results"} 
+              simple={isSimpleFooter} 
               onOpenLegal={setActiveModal} 
             />
           </Suspense>
         )}
         
-        {page === "home" && (
+        {isHome && (
           <Suspense fallback={null}>
             <FloatingBadge />
           </Suspense>
@@ -206,36 +170,90 @@ function App() {
       </ErrorBoundary>
 
       <Suspense fallback={null}>
-        <LegalModal 
-          title="Privacy Policy" 
-          isOpen={activeModal === 'privacy'} 
+        <LegalModal
+          title="Privacy Policy"
+          isOpen={activeModal === 'privacy'}
           onClose={() => setActiveModal(null)}
         >
-          <div className="text-sm sm:text-base space-y-4">
-            <p className="font-bold text-slate-900">1. Data Collection</p>
-            <p>ListedPEI is committed to protecting your privacy. We do not store the business details you enter in our profile generation form. Everything is processed in transient memory.</p>
-            <p className="font-bold text-slate-900 pt-4">2. Cookies</p>
-            <p>We use essential functional cookies to manage your session. We do not use tracking or advertising cookies.</p>
-            <p className="font-bold text-slate-900 pt-4">3. Third-Party Services</p>
-            <p>We use Google Gemini AI and EmailJS. Please refer to their respective privacy policies for how they handle data.</p>
-          </div>
+          <PrivacyPolicyContent />
         </LegalModal>
 
-        <LegalModal 
-          title="Terms of Service" 
-          isOpen={activeModal === 'terms'} 
+        <LegalModal
+          title="Terms of Service"
+          isOpen={activeModal === 'terms'}
           onClose={() => setActiveModal(null)}
         >
-          <div className="text-sm sm:text-base space-y-4">
-            <p className="font-bold text-slate-900">1. Acceptance of Terms</p>
-            <p>By using ListedPEI, you agree to these terms. Our service is provided "as is" for informational purposes.</p>
-            <p className="font-bold text-slate-900 pt-4">2. AI-Generated Content</p>
-            <p>Content is generated by AI. While we optimize for local SEO, we do not guarantee search rankings. Review all text before publishing.</p>
-          </div>
+          <TermsOfServiceContent />
         </LegalModal>
       </Suspense>
     </div>
   );
+}
+
+// Main content component for home routes
+function MainContent({ page, formData, result, error, initialWantsMockup, handleFormSubmit, handleReset, startForm, onExportPDF }) {
+  switch (page) {
+    case "home":
+      return (
+        <Suspense fallback={<PageLoader />}>
+          <LandingPage onGetStarted={startForm} />
+        </Suspense>
+      );
+    case "form":
+      return (
+        <div className="animate-fade-in">
+          <div className="fixed top-4 sm:top-8 left-4 sm:left-8 z-[60]">
+            <button 
+              onClick={handleReset}
+              className="flex items-center gap-2 text-slate-400 font-bold hover:text-slate-900 transition-all group tap-target"
+            >
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full glass flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </div>
+              <span className="hidden md:block text-sm">Exit to Home</span>
+            </button>
+          </div>
+          
+          {error && (
+            <div className="fixed top-4 sm:top-8 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] max-w-md px-4 pointer-events-none">
+              <div className="bg-red-500 text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 animate-bounce shadow-red-500/20 pointer-events-auto">
+                <span className="text-lg sm:text-xl">⚠️</span>
+                <p className="font-bold text-xs sm:text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+          
+          <Suspense fallback={<PageLoader />}>
+            <StepForm onSubmit={handleFormSubmit} initialWantsMockup={initialWantsMockup} />
+          </Suspense>
+        </div>
+      );
+    case "loading":
+      return (
+        <Suspense fallback={<PageLoader />}>
+          <Loading businessName={formData?.businessName} />
+        </Suspense>
+      );
+    case "results":
+      return (
+        <Suspense fallback={<PageLoader />}>
+          <Results
+            result={result}
+            formData={formData}
+            onReset={handleReset}
+            onExportPDF={(res, form) => onExportPDF(res, form)}
+          />
+        </Suspense>
+      );
+    default:
+      return (
+        <Suspense fallback={<PageLoader />}>
+          <LandingPage onGetStarted={startForm} />
+        </Suspense>
+      );
+  }
 }
 
 export default App;

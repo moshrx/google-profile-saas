@@ -13,12 +13,15 @@ export default function AdminLeads() {
   const [activeTab, setActiveTab] = useState("kit");
   const [kitLeads, setKitLeads] = useState([]);
   const [websiteLeads, setWebsiteLeads] = useState([]);
+  const [grantLeads, setGrantLeads] = useState([]);
 
   useEffect(() => {
     const kitData = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
     const websiteData = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
+    const grantData = JSON.parse(localStorage.getItem("listedpei_grant_leads") || "[]");
     setKitLeads(kitData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
     setWebsiteLeads(websiteData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
+    setGrantLeads(grantData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
   }, []);
 
   const handleLogin = (e) => {
@@ -38,18 +41,24 @@ export default function AdminLeads() {
   };
 
   const exportCSV = (type) => {
-    const data = type === "kit" ? kitLeads : websiteLeads;
+    const data = type === "kit" ? kitLeads : type === "website" ? websiteLeads : grantLeads;
     if (data.length === 0) return;
 
     let headers = type === "kit" 
       ? "Email,Business Name,Category,City,Date\n"
-      : "Name,Email,Phone,Status,Message,Business,Date\n";
+      : type === "website"
+      ? "Name,Email,Phone,Status,Message,Business,Date\n"
+      : "Email,Business Type,Business Age,Employees,Website,Funding Goal,Matched Grants,Date\n";
     
     let csvContent = headers + data.map(l => {
       if (type === "kit") {
         return `${l.email},${l.businessName},${l.category},${l.city},${l.timestamp}`;
-      } else {
+      } else if (type === "website") {
         return `${l.name},${l.email},${l.phone || ""},${l.status || ""},"${(l.message || "").replace(/"/g, '""')}",${l.businessName},${l.timestamp}`;
+      } else {
+        const answers = l.answersLabel || l.answers || {};
+        const matched = Array.isArray(l.matchedGrants) ? l.matchedGrants.join("; ") : "";
+        return `${l.email || ""},${answers.businessType || ""},${answers.businessAge || ""},${answers.employees || ""},${answers.website || ""},${answers.fundingGoal || ""},"${matched.replace(/"/g, '""')}",${l.timestamp}`;
       }
     }).join("\n");
 
@@ -69,9 +78,12 @@ export default function AdminLeads() {
       if (activeTab === "kit") {
         localStorage.removeItem("listedpei_leads");
         setKitLeads([]);
-      } else {
+      } else if (activeTab === "website") {
         localStorage.removeItem("listedpei_website_leads");
         setWebsiteLeads([]);
+      } else {
+        localStorage.removeItem("listedpei_grant_leads");
+        setGrantLeads([]);
       }
     }
   };
@@ -121,7 +133,7 @@ export default function AdminLeads() {
     );
   }
 
-  const currentLeads = activeTab === "kit" ? kitLeads : websiteLeads;
+  const currentLeads = activeTab === "kit" ? kitLeads : activeTab === "website" ? websiteLeads : grantLeads;
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 md:p-12">
@@ -146,7 +158,7 @@ export default function AdminLeads() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 sm:mb-8 bg-slate-200/50 p-1.5 rounded-xl sm:rounded-2xl w-fit">
+        <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 bg-slate-200/50 p-1.5 rounded-xl sm:rounded-2xl w-fit">
           <button
             onClick={() => setActiveTab("kit")}
             className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all tap-target ${
@@ -162,6 +174,14 @@ export default function AdminLeads() {
             }`}
           >
             Website Leads ({websiteLeads.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("grant")}
+            className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all tap-target ${
+              activeTab === "grant" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            Grant Leads ({grantLeads.length})
           </button>
         </div>
 
@@ -190,7 +210,7 @@ export default function AdminLeads() {
                       <span className="text-slate-400">{new Date(l.timestamp).toLocaleDateString()}</span>
                     </div>
                   </>
-                ) : (
+                ) : activeTab === "website" ? (
                   <>
                     <div className="flex justify-between items-start">
                       <div>
@@ -205,6 +225,22 @@ export default function AdminLeads() {
                     </div>
                     <p className="text-xs text-slate-600 line-clamp-2">{l.phone || "No phone"}</p>
                     <p className="text-xs text-primary-700 font-bold">{l.businessName}</p>
+                    <p className="text-xs text-slate-400">{new Date(l.timestamp).toLocaleDateString()}</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-bold text-slate-800 text-sm">{l.email || "—"}</p>
+                        <p className="text-slate-600 text-xs">Grant Quiz Lead</p>
+                      </div>
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded uppercase tracking-tighter ring-1 ring-emerald-100">
+                        {Array.isArray(l.matchedGrants) && l.matchedGrants.length > 0 ? `${l.matchedGrants.length} match` : "No match"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 line-clamp-2">
+                      {(l.matchedGrants || []).join(", ") || "No matched grants"}
+                    </p>
                     <p className="text-xs text-slate-400">{new Date(l.timestamp).toLocaleDateString()}</p>
                   </>
                 )}
@@ -227,7 +263,7 @@ export default function AdminLeads() {
                       <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">City</th>
                       <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
                     </>
-                  ) : (
+                  ) : activeTab === "website" ? (
                     <>
                        <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Name</th>
                        <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Email</th>
@@ -235,6 +271,16 @@ export default function AdminLeads() {
                        <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
                        <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Business</th>
                        <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Email</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Business Type</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Age</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Employees</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Funding Goal</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Matched Grants</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
                     </>
                   )}
                 </tr>
@@ -254,7 +300,7 @@ export default function AdminLeads() {
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.city}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-400 text-xs">{new Date(l.timestamp).toLocaleString()}</td>
                       </>
-                    ) : (
+                    ) : activeTab === "website" ? (
                       <>
                          <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-800 text-sm">{l.name}</td>
                          <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.email}</td>
@@ -269,12 +315,24 @@ export default function AdminLeads() {
                          <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-primary-700 text-sm">{l.businessName}</td>
                          <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-400 text-xs">{new Date(l.timestamp).toLocaleString()}</td>
                       </>
+                    ) : (
+                      <>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-800 text-sm">{l.email || "—"}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.answersLabel?.businessType || l.answers?.businessType || "—"}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.answersLabel?.businessAge || l.answers?.businessAge || "—"}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.answersLabel?.employees || l.answers?.employees || "—"}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-600 font-medium text-sm">{l.answersLabel?.fundingGoal || l.answers?.fundingGoal || "—"}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-500 text-xs">
+                          {(l.matchedGrants || []).join(", ") || "No matched grants"}
+                        </td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-slate-400 text-xs">{new Date(l.timestamp).toLocaleString()}</td>
+                      </>
                     )}
                   </tr>
                 ))}
                 {currentLeads.length === 0 && (
                    <tr>
-                    <td colSpan={activeTab === "kit" ? 5 : 6} className="px-6 py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={activeTab === "kit" ? 5 : activeTab === "website" ? 6 : 7} className="px-6 py-12 text-center text-slate-400 font-medium">
                       No leads collected yet.
                     </td>
                    </tr>

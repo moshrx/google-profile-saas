@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import emailjs from '@emailjs/browser';
 import { useToast, ToastContainer } from "./Toast";
 
@@ -377,7 +377,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           {(result.faqs || []).map((faq, i) => (
             <div key={i} className="space-y-2">
               <div className="flex items-center gap-2 mb-1 pl-1">
-                <span className="text-[10px] sm:text-xs font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase font-outfit tracking-wider">
+                <span className="text-[10px] sm:text-xs font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase font-display tracking-wider">
                   Q&A {i + 1}
                 </span>
               </div>
