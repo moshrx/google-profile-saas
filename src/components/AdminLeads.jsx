@@ -1,6 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+
+function getStoredLeads(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || "[]");
+    const safeSort = (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
+    return data.sort(safeSort);
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Admin Leads Dashboard (Feature 5)
@@ -11,18 +21,9 @@ export default function AdminLeads() {
     sessionStorage.getItem("listedpei_admin_auth") === "true"
   );
   const [activeTab, setActiveTab] = useState("kit");
-  const [kitLeads, setKitLeads] = useState([]);
-  const [websiteLeads, setWebsiteLeads] = useState([]);
-  const [grantLeads, setGrantLeads] = useState([]);
-
-  useEffect(() => {
-    const kitData = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
-    const websiteData = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
-    const grantData = JSON.parse(localStorage.getItem("listedpei_grant_leads") || "[]");
-    setKitLeads(kitData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
-    setWebsiteLeads(websiteData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
-    setGrantLeads(grantData.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)));
-  }, []);
+  const [kitLeads, setKitLeads] = useState(() => getStoredLeads("listedpei_leads"));
+  const [websiteLeads, setWebsiteLeads] = useState(() => getStoredLeads("listedpei_website_leads"));
+  const [grantLeads, setGrantLeads] = useState(() => getStoredLeads("listedpei_grant_leads"));
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -50,15 +51,22 @@ export default function AdminLeads() {
       ? "Name,Email,Phone,Status,Message,Business,Date\n"
       : "Email,Business Type,Business Age,Employees,Website,Funding Goal,Matched Grants,Date\n";
     
+    const escapeCsv = (val) => {
+      const str = String(val ?? "");
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
     let csvContent = headers + data.map(l => {
       if (type === "kit") {
-        return `${l.email},${l.businessName},${l.category},${l.city},${l.timestamp}`;
+        return `${escapeCsv(l.email)},${escapeCsv(l.businessName)},${escapeCsv(l.category)},${escapeCsv(l.city)},${escapeCsv(l.timestamp)}`;
       } else if (type === "website") {
-        return `${l.name},${l.email},${l.phone || ""},${l.status || ""},"${(l.message || "").replace(/"/g, '""')}",${l.businessName},${l.timestamp}`;
+        return `${escapeCsv(l.name)},${escapeCsv(l.email)},${escapeCsv(l.phone)},${escapeCsv(l.status)},${escapeCsv(l.message)},${escapeCsv(l.businessName)},${escapeCsv(l.timestamp)}`;
       } else {
         const answers = l.answersLabel || l.answers || {};
         const matched = Array.isArray(l.matchedGrants) ? l.matchedGrants.join("; ") : "";
-        return `${l.email || ""},${answers.businessType || ""},${answers.businessAge || ""},${answers.employees || ""},${answers.website || ""},${answers.fundingGoal || ""},"${matched.replace(/"/g, '""')}",${l.timestamp}`;
+        return `${escapeCsv(l.email)},${escapeCsv(answers.businessType)},${escapeCsv(answers.businessAge)},${escapeCsv(answers.employees)},${escapeCsv(answers.website)},${escapeCsv(answers.fundingGoal)},${escapeCsv(matched)},${escapeCsv(l.timestamp)}`;
       }
     }).join("\n");
 

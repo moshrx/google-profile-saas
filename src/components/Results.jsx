@@ -1,6 +1,94 @@
 import { useState } from "react";
 import emailjs from '@emailjs/browser';
-import { useToast, ToastContainer } from "./Toast";
+import { SUPPORT_EMAIL } from '../utils/constants';
+import { useToast } from "../hooks/useToast";
+import { ToastContainer } from "./Toast";
+import { Link } from "react-router-dom";
+import GrantChat from "./GrantChat";
+
+const GRANT_STEPS = [
+  { id: "businessAge", question: "How long have you been in business?", options: [{ value: "new", label: "Less than 1 year" }, { value: "established", label: "1–3 years" }, { value: "mature", label: "3+ years" }] },
+  { id: "employees", question: "How many employees?", options: [{ value: "solo", label: "Just me" }, { value: "small", label: "2–10 employees" }, { value: "medium", label: "11+ employees" }] },
+  { id: "fundingGoal", question: "What are you looking to fund?", options: [{ value: "website", label: "New website" }, { value: "marketing", label: "Marketing" }, { value: "equipment", label: "Equipment" }, { value: "training", label: "Training" }, { value: "multiple", label: "Multiple things" }] },
+];
+
+const GRANTS_DATA = [
+  { name: "Web Presence Assistance Program", maxAmount: "50% of eligible costs", description: "Covers up to 50% of website development costs.", url: "https://www.princeedwardisland.ca/en/topic/small-business-incentives", match: (a) => a.fundingGoal === "website" || a.fundingGoal === "multiple" },
+  { name: "Business Development Support", maxAmount: "Up to $5,000", description: "Funding for business planning, market research, and consulting.", url: "https://www.princeedwardisland.ca/en/service/small-business-assistance-program", match: (a) => (a.businessAge === "established" || a.businessAge === "mature") && (a.employees === "small" || a.employees === "medium") && (a.fundingGoal === "marketing" || a.fundingGoal === "training" || a.fundingGoal === "multiple") },
+  { name: "Digital Adoption Support", maxAmount: "Up to $2,500", description: "Funding to adopt new digital technologies and software.", url: "https://www.princeedwardisland.ca/en/service/small-business-investment-grant", match: (a) => (a.employees === "solo" || a.employees === "small") && (a.fundingGoal === "website" || a.fundingGoal === "equipment" || a.fundingGoal === "multiple") },
+];
+
+function GrantChecker({ onGrantsChecked }) {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({ businessAge: "", employees: "", fundingGoal: "" });
+  const [done, setDone] = useState(false);
+  const [matched, setMatched] = useState([]);
+
+  const current = GRANT_STEPS[step];
+
+  const handleSelect = (value) => {
+    const updated = { ...answers, [current.id]: value };
+    setAnswers(updated);
+    if (step < GRANT_STEPS.length - 1) {
+      setStep(step + 1);
+    } else {
+      const results = GRANTS_DATA.filter(g => g.match(updated));
+      setMatched(results);
+      setDone(true);
+      onGrantsChecked(results, updated);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mt-3">
+        {matched.length > 0 ? (
+          <div className="space-y-3">
+            {matched.map((g) => (
+              <div key={g.name} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className="font-black text-slate-900 text-sm">{g.name}</span>
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">{g.maxAmount}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed">{g.description}</p>
+                </div>
+                <a href={g.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-emerald-700 hover:text-emerald-800 whitespace-nowrap shrink-0 flex items-center gap-1">
+                  Apply
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                </a>
+              </div>
+            ))}
+            <p className="text-xs text-slate-400 px-1">Results saved — included in your kit email above.</p>
+          </div>
+        ) : (
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
+            <p className="text-sm font-bold text-slate-700 mb-1">No exact matches found</p>
+            <p className="text-xs text-slate-500 mb-3">Check Innovation PEI for all available programs.</p>
+            <a href="https://www.princeedwardisland.ca/en/information/innovation-pei" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary-600 hover:text-primary-700">View all programs →</a>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3">
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400 mb-2">Step {step + 1} of {GRANT_STEPS.length} — {current.question}</p>
+      <div className="flex flex-wrap gap-2">
+        {current.options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => handleSelect(opt.value)}
+            className="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50 text-sm font-medium text-slate-700 transition-all"
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /**
  * CopyCard Sub-component with individual Copy button
@@ -55,14 +143,30 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
   const { toasts, addToast } = useToast();
   const [email, setEmail] = useState("");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [grantResults, setGrantResults] = useState(null);
+  const [grantAnswers, setGrantAnswers] = useState(null);
+
+  const handleGrantsChecked = (matched, answers) => {
+    setGrantResults(matched);
+    setGrantAnswers(answers);
+    // Save to localStorage
+    let leads = [];
+    try {
+      leads = JSON.parse(localStorage.getItem("listedpei_grant_leads") || "[]");
+    } catch {
+      leads = [];
+    }
+    leads.push({ businessName: formData?.businessName, answers, matchedGrants: matched.map(g => g.name), timestamp: new Date().toISOString() });
+    localStorage.setItem("listedpei_grant_leads", JSON.stringify(leads));
+  };
   const [websiteLead, setWebsiteLead] = useState({
-    name: formData?.businessName || "",
+    name: "",
     email: "",
-    phone: formData?.phone || "",
-    status: formData?.wantsWebsiteMockup ? "No Website" : "Enhance Existing",
-    message: formData?.wantsWebsiteMockup 
-      ? `I selected that I don't have a website (or need a new one) during my profile generation for ${formData?.businessName}. I'm interested in getting a FREE mockup from PEI Web Studio.`
-      : `I just set up my Google profile for ${formData?.businessName} and I'm interested in getting a website mockup.`,
+    phone: formData.phone || "",
+    status: formData.wantsWebsiteMockup ? "No Website" : "Enhance Existing",
+    message: formData.wantsWebsiteMockup 
+      ? `I selected that I don't have a website (or need a new one) during my profile generation for ${formData.businessName}. I'm interested in getting a FREE mockup from PEI Web Studio.`
+      : `I just set up my Google profile for ${formData.businessName} and I'm interested in getting a website mockup.`,
   });
   const [isSendingWebsiteLead, setIsSendingWebsiteLead] = useState(false);
   const [websiteLeadSent, setWebsiteLeadSent] = useState(false);
@@ -108,7 +212,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
         to_email: email,
         to_name: formData.businessName,
         from_name: "ListedPEI",
-        reply_to: "peiwebstudio@gmail.com",
+        reply_to: SUPPORT_EMAIL,
         business_name: formData.businessName,
         category: formData.category,
         city: formData.city,
@@ -119,6 +223,16 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
         review_neutral: result.reviewResponses?.neutral || 'N/A',
         review_negative: result.reviewResponses?.negative || 'N/A',
         faqs: (result.faqs || []).map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n"),
+        grant_results: grantResults
+          ? (grantResults.length > 0
+              ? grantResults.map(g => `${g.name} (${g.maxAmount})`).join(", ")
+              : "No exact grant matches found.")
+          : "Grant check not completed.",
+        grant_details: grantResults
+          ? (grantResults.length > 0
+              ? grantResults.map(g => `${g.name} (${g.maxAmount})\n${g.description}\nApply: ${g.url}`).join("\n\n")
+              : "No exact grant matches found. Visit https://www.princeedwardisland.ca/en/information/innovation-pei for all programs.")
+          : "Grant check not completed.",
         keywords_primary: (result.competitorKeywords?.primary || []).join(", "),
         keywords_local: (result.competitorKeywords?.local || []).join(", "),
         keywords_longtail: (result.competitorKeywords?.longTail || []).join(", "),
@@ -126,10 +240,15 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
         categories: (result.categories || []).join(", "),
       };
 
-      await emailjs.send(serviceId, kitTemplateId, templateParams, publicKey);
+      await emailjs.send(serviceId, kitTemplateId, templateParams, { publicKey });
 
       // Save to localStorage for admin
-      const leads = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
+      let leads = [];
+      try {
+        leads = JSON.parse(localStorage.getItem("listedpei_leads") || "[]");
+      } catch {
+        leads = [];
+      }
       leads.push({ email, businessName: formData.businessName, category: formData.category, city: formData.city, timestamp: new Date().toISOString() });
       localStorage.setItem("listedpei_leads", JSON.stringify(leads));
 
@@ -156,20 +275,43 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
 
     try {
       const templateParams = {
-        to_email: "peiwebstudio@gmail.com", // Send lead to you
+        to_email: SUPPORT_EMAIL,
         from_name: websiteLead.name,
         from_email: websiteLead.email,
         reply_to: websiteLead.email,
         business_name: formData.businessName,
         phone: websiteLead.phone || "Not provided",
         website_status: websiteLead.status,
-        message: websiteLead.message,
+        business_type: grantAnswers?.businessAge
+          ? (grantAnswers.businessAge === "new" ? "Less than 1 year" : grantAnswers.businessAge === "established" ? "1–3 years" : "3+ years")
+          : "Not provided",
+        business_age: grantAnswers?.businessAge
+          ? (grantAnswers.businessAge === "new" ? "Less than 1 year" : grantAnswers.businessAge === "established" ? "1–3 years" : "3+ years")
+          : "Not provided",
+        employees: grantAnswers?.employees
+          ? (grantAnswers.employees === "solo" ? "Just me" : grantAnswers.employees === "small" ? "2–10 employees" : "11+ employees")
+          : "Not provided",
+        has_website: "-",
+        funding_goal: grantAnswers?.fundingGoal
+          ? (grantAnswers.fundingGoal === "website" ? "New website" : grantAnswers.fundingGoal === "marketing" ? "Marketing" : grantAnswers.fundingGoal === "equipment" ? "Equipment" : grantAnswers.fundingGoal === "training" ? "Training" : "Multiple things")
+          : "Not provided",
+        matched_grants: grantResults
+          ? (grantResults.length > 0 ? grantResults.map(g => g.name).join(", ") : "No matches")
+          : "Grant check not completed",
+        message: websiteLead.message + (grantResults && grantResults.length > 0
+          ? `\n\n--- Grant Eligibility ---\n${grantResults.map(g => `${g.name} (${g.maxAmount})`).join("\n")}`
+          : ""),
       };
 
-      await emailjs.send(serviceId, leadTemplateId, templateParams, publicKey);
+      await emailjs.send(serviceId, leadTemplateId, templateParams, { publicKey });
 
       // Save to localStorage
-      const leads = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
+      let leads = [];
+      try {
+        leads = JSON.parse(localStorage.getItem("listedpei_website_leads") || "[]");
+      } catch {
+        leads = [];
+      }
       leads.push({ ...websiteLead, businessName: formData.businessName, timestamp: new Date().toISOString() });
       localStorage.setItem("listedpei_website_leads", JSON.stringify(leads));
 
@@ -189,8 +331,8 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
   };
 
   const copyAllKeywords = () => {
-    const k = result.competitorKeywords;
-    const all = [...k.primary, ...k.local, ...k.longTail].join(", ");
+    const k = result.competitorKeywords || {};
+    const all = [...(k.primary || []), ...(k.local || []), ...(k.longTail || [])].join(", ");
     navigator.clipboard.writeText(all);
     addToast("All keywords copied!");
   };
@@ -242,6 +384,18 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           </div>
         </div>
 
+        {/* Inline Grant Checker */}
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-sm mb-6 sm:mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-xl">💰</div>
+            <div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 leading-tight">Is {formData.businessName} eligible for PEI grants?</h3>
+              <p className="text-xs text-slate-500">3 quick questions — results saved to your kit email</p>
+            </div>
+          </div>
+          <GrantChecker businessName={formData.businessName} onGrantsChecked={handleGrantsChecked} />
+        </div>
+
         {/* Email Capture Section */}
         <div className="card shadow-md p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-primary-100 bg-gradient-to-r from-white to-primary-50">
           <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-2 sm:mb-3">Get your full kit delivered to your inbox</h2>
@@ -285,7 +439,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            {result.googlePosts.map((post, i) => (
+            {(result.googlePosts || []).map((post, i) => (
               <CopyCard key={i} label={`Google Post ${i + 1}`} content={post} />
             ))}
           </div>
@@ -297,9 +451,9 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <CopyCard label="Positive Review Response" content={result.reviewResponses.positive} badge="5-Star" />
-          <CopyCard label="Neutral Review Response" content={result.reviewResponses.neutral} badge="3-Star" />
-          <CopyCard label="Negative Review Response" content={result.reviewResponses.negative} badge="1-Star" />
+          <CopyCard label="Positive Review Response" content={result.reviewResponses?.positive} badge="5-Star" />
+          <CopyCard label="Neutral Review Response" content={result.reviewResponses?.neutral} badge="3-Star" />
+          <CopyCard label="Negative Review Response" content={result.reviewResponses?.negative} badge="1-Star" />
 
           {/* Photo Tips Section */}
           <div className="flex items-center gap-3 mb-2 sm:mb-3 mt-6 sm:mt-8">
@@ -336,16 +490,16 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           <div className="card shadow-md p-4 sm:p-6 border border-slate-100">
             <div className="space-y-4 sm:space-y-6">
               {[
-                { label: "Primary", list: result.competitorKeywords.primary, color: "bg-blue-100 text-blue-800" },
-                { label: "Local (PEI-specific)", list: result.competitorKeywords.local, color: "bg-emerald-100 text-emerald-800" },
-                { label: "Long-Tail Services", list: result.competitorKeywords.longTail, color: "bg-purple-100 text-purple-800" }
+                { label: "Primary", list: result.competitorKeywords?.primary || [], color: "bg-blue-100 text-blue-800" },
+                { label: "Local (PEI-specific)", list: result.competitorKeywords?.local || [], color: "bg-emerald-100 text-emerald-800" },
+                { label: "Long-Tail Services", list: result.competitorKeywords?.longTail || [], color: "bg-purple-100 text-purple-800" }
               ].map((group) => (
                 <div key={group.label}>
                   <h3 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sm:mb-3">{group.label}</h3>
                   <div className="flex flex-wrap gap-2">
-                    {group.list.map((kw) => (
+                    {group.list.map((kw, idx) => (
                       <button
-                        key={kw}
+                        key={`${group.label}-${idx}-${kw}`}
                         onClick={() => {
                           navigator.clipboard.writeText(kw);
                           addToast(`Keyword "${kw}" copied!`);
@@ -397,7 +551,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
 
           <div className="card-result p-4 sm:p-6 border border-slate-100 bg-slate-50/50 rounded-xl sm:rounded-2xl">
             <div className="space-y-3">
-              {result.categories.map((cat, i) => (
+              {(result.categories || []).map((cat, i) => (
                 <div key={i} className="flex items-center gap-3 sm:gap-4">
                   <span className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs sm:text-sm font-bold flex-shrink-0 ${
                       i === 0 ? "bg-primary-600 text-white" : "bg-white text-slate-400 border border-slate-200"
@@ -424,14 +578,14 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
                 Partner Program
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 sm:mb-8 !leading-tight tracking-tight">
-                {formData?.wantsWebsiteMockup ? (
+                {formData.wantsWebsiteMockup ? (
                   <>Get your <span className="text-primary-400">FREE Mockup</span> started.</>
                 ) : (
                   <>Take your business <span className="text-primary-400">Online</span> today.</>
                 )}
               </h2>
               <p className="text-slate-400 mb-6 sm:mb-10 text-base sm:text-lg leading-relaxed">
-                {formData?.wantsWebsiteMockup 
+                {formData.wantsWebsiteMockup 
                   ? "You mentioned you need a website. Provide a few details here, and our partner PEI Web Studio will design a custom mockup for your business at no cost!"
                   : "Your high-converting Google profile is just the beginning. Get a custom website that matches your new professional presence."
                 }
@@ -507,6 +661,16 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
                       />
                     </div>
                     <div className="space-y-1 sm:space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        placeholder="(902) 555-1234"
+                        className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-600 focus:bg-white/10 focus:border-primary-500/50 outline-none transition-all text-sm"
+                        value={websiteLead.phone}
+                        onChange={(e) => setWebsiteLead({ ...websiteLead, phone: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1 sm:space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Your Vision</label>
                       <textarea
                         required
@@ -558,11 +722,51 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           )}
         </div>
 
+        {/* PickUp AI Promo */}
+        <div className="mt-10 sm:mt-14 rounded-3xl bg-slate-900 text-white p-6 sm:p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[80px] rounded-full pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 bg-red-500/20 text-red-300 text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
+                PickUp AI by ListedPEI
+              </div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-3 leading-tight">
+                You ranked on Google. Now answer the calls.
+              </h3>
+              <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl">
+                An AI phone agent that answers every call 24/7 — handles bookings, FAQs, and follow-ups so you never miss a customer again. Plans start at $199/mo with a free 1-week trial.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-300">
+                {["24/7 call answering", "Booking handling", "Setup in 48 hours"].map((item) => (
+                  <span key={item} className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 shrink-0">
+              <Link
+                to="/pickupai"
+                className="inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-black px-6 py-3.5 rounded-2xl transition-all hover:-translate-y-0.5 shadow-xl shadow-red-500/20 text-sm sm:text-base whitespace-nowrap"
+              >
+                Get Free 1-Week Trial
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              </Link>
+              <p className="text-xs text-slate-500 text-center">No credit card required</p>
+            </div>
+          </div>
+        </div>
+
         {/* Footer */}
         <div className="mt-8 sm:mt-12 text-center">
           <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Generated by ListedPEI</p>
         </div>
       </div>
+
+      {/* Floating Grant AI Chat Widget */}
+      <GrantChat />
     </div>
   );
 }

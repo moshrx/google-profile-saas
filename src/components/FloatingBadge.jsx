@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from 'react';
 
+function getInitialBadgeState() {
+  const storedDismissed = sessionStorage.getItem('listedpei_badge_dismissed');
+  if (storedDismissed) {
+    return { count: 0, dismissed: true };
+  }
+
+  const storedCount = localStorage.getItem('listedpei_badge_count');
+  const storedExpiry = localStorage.getItem('listedpei_badge_expiry');
+  const now = new Date().getTime();
+
+  let finalCount;
+  if (storedCount && storedExpiry && now < parseInt(storedExpiry, 10)) {
+    finalCount = parseInt(storedCount, 10);
+  } else {
+    finalCount = Math.floor(Math.random() * (28 - 12 + 1)) + 12;
+    localStorage.setItem('listedpei_badge_count', finalCount.toString());
+    localStorage.setItem('listedpei_badge_expiry', (now + 7 * 24 * 60 * 60 * 1000).toString());
+  }
+
+  return { count: finalCount, dismissed: false };
+}
+
 export default function FloatingBadge() {
-  const [count, setCount] = useState(0);
+  const initial = getInitialBadgeState();
+  const [count] = useState(initial.count);
   const [isVisible, setIsVisible] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(initial.dismissed);
 
   useEffect(() => {
-    const storedCount = localStorage.getItem('listedpei_badge_count');
-    const storedExpiry = localStorage.getItem('listedpei_badge_expiry');
-    const storedDismissed = sessionStorage.getItem('listedpei_badge_dismissed');
-    const now = new Date().getTime();
-
-    if (storedDismissed) {
-      setIsDismissed(true);
-      return;
-    }
-
-    let finalCount;
-
-    if (storedCount && storedExpiry && now < parseInt(storedExpiry, 10)) {
-      finalCount = parseInt(storedCount, 10);
-    } else {
-      finalCount = Math.floor(Math.random() * (28 - 12 + 1)) + 12;
-      localStorage.setItem('listedpei_badge_count', finalCount.toString());
-      localStorage.setItem('listedpei_badge_expiry', (now + 7 * 24 * 60 * 60 * 1000).toString());
-    }
-
-    setCount(finalCount);
-
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 2000);
-
     return () => clearTimeout(timer);
   }, []);
 

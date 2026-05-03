@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Logo from "./Logo";
-import Footer from "./Footer";
+import PickUpAILogo from "./PickUpAILogo";
 import LegalModal from "./LegalModal";
-import { PrivacyPolicyContent, TermsOfServiceContent } from "./LegalContent";
+import SiteFooter from "./SiteFooter";
+import { PickUpAIPrivacyContent, PickUpAITermsContent } from "./LegalContent";
+import { DEMO_PHONE, DEMO_PHONE_RAW, SUPPORT_EMAIL } from "../utils/constants";
 
 const demoQuestions = [
   "What are your hours?",
@@ -57,22 +58,113 @@ const plans = [
   {
     name: "Starter",
     price: "$199/mo",
-    description: "500 minutes, basic FAQ",
-    perks: ["500 monthly minutes", "Business hours and FAQ setup", "Call summaries"],
+    setup: "$500 one-time setup",
+    tagline: "Small businesses testing AI, light call volume.",
+    perks: [
+      "500 minutes/month (~8 hours of calls)",
+      "Basic FAQ setup (10 questions)",
+      "Business hours, location, voicemail",
+      "Daily call summary email",
+      "Standard voice (Polly.Joanna)",
+    ],
+    notIncluded: [
+      "Booking handling",
+      "Review responses",
+    ],
+    included: [
+      { feature: "Monthly minutes", detail: "500 min (~8 hrs of calls)" },
+      { feature: "FAQ setup", detail: "10 questions configured" },
+      { feature: "Business hours", detail: "AI tells callers when you're open/closed" },
+      { feature: "Location & voicemail", detail: "Directions, parking, takes messages" },
+      { feature: "Call summaries", detail: "Daily email recap" },
+      { feature: "Voice", detail: "Standard — Polly.Joanna (US English)" },
+    ],
+    setupIncludes: [
+      "2-hour config call",
+      "FAQ writing + testing",
+      "Go-live in 48 hours",
+    ],
   },
   {
     name: "Pro",
     price: "$399/mo",
-    description: "unlimited minutes, booking integration, review responses",
-    perks: ["Unlimited minutes", "Booking integration", "Review response drafts"],
+    setup: "$1,200 one-time setup",
+    tagline: "Growing businesses that take bookings and miss calls during rush.",
     popular: true,
+    perks: [
+      "Unlimited minutes",
+      "Unlimited FAQ refinement",
+      "Booking integration — calendar, SMS confirmation",
+      "Review response drafts",
+      "Call analytics dashboard",
+      "SMS replies + 6 voice options",
+    ],
+    notIncluded: [
+      "Managed updates (text us changes)",
+      "Monthly call review",
+    ],
+    included: [
+      { feature: "Monthly minutes", detail: "Unlimited — no overage, ever" },
+      { feature: "FAQ refinement", detail: "Unlimited, tuned from real call data" },
+      { feature: "Booking integration", detail: "AI checks calendar, confirms appointments, sends SMS to customer + owner" },
+      { feature: "Review responses", detail: "AI writes replies to Google Reviews — you copy-paste" },
+      { feature: "Call analytics", detail: "Dashboard: answered, missed, escalated, bookings" },
+      { feature: "SMS replies", detail: "Customers can text for quick answers" },
+      { feature: "Voice options", detail: "6 Polly voices (male/female, US/UK/AU)" },
+    ],
+    setupIncludes: [
+      "Booking system integration (Google Calendar or simple DB)",
+      "2 weeks of call monitoring + tuning",
+      "Owner training (30 min)",
+    ],
   },
   {
     name: "Concierge",
     price: "$799/mo",
-    description: "everything + we manage it for you",
-    perks: ["Everything in Pro", "Hands-on optimization", "Managed updates and call tuning"],
+    setup: "$2,000 one-time setup",
+    tagline: "Busy owners who want zero involvement. We manage everything.",
+    perks: [
+      "Everything in Pro",
+      "We update your AI within 24 hours",
+      "Monthly call review — we improve responses",
+      "Escalation handling with context",
+      "Direct Slack / email line",
+    ],
+    notIncluded: [],
+    included: [
+      { feature: "Everything in Pro", detail: "Unlimited minutes, bookings, reviews, SMS, analytics" },
+      { feature: "Managed updates", detail: "Text us changes — pushed within 24 hours" },
+      { feature: "Monthly call review", detail: "We listen to recordings and improve responses" },
+      { feature: "Escalation handling", detail: "Urgent calls transferred to you with context" },
+      { feature: "Direct line", detail: "Dedicated Slack / email to our team" },
+    ],
+    setupIncludes: [
+      "Full onboarding + 30 days daily monitoring",
+      "Weekly check-ins first month",
+    ],
   },
+];
+
+const comparisonRows = [
+  { feature: "Monthly minutes",  starter: "500",        pro: "Unlimited",  concierge: "Unlimited" },
+  { feature: "FAQ questions",    starter: "10",         pro: "Unlimited",  concierge: "Unlimited" },
+  { feature: "Booking handling", starter: false,        pro: true,         concierge: true },
+  { feature: "Review responses", starter: false,        pro: true,         concierge: true },
+  { feature: "Call dashboard",   starter: "Basic",      pro: "Advanced",   concierge: "Advanced" },
+  { feature: "Voice options",    starter: "1",          pro: "6",          concierge: "6" },
+  { feature: "SMS replies",      starter: false,        pro: true,         concierge: true },
+  { feature: "Weekly optimization", starter: false,     pro: false,        concierge: true },
+  { feature: "Managed updates",  starter: false,        pro: false,        concierge: true },
+  { feature: "Strategy calls",   starter: false,        pro: false,        concierge: "Monthly" },
+  { feature: "Support",          starter: "Email",      pro: "Priority 4hr", concierge: "Dedicated" },
+  { feature: "Setup fee",        starter: "$500",       pro: "$1,200",     concierge: "$2,000" },
+];
+
+const pricingFaqs = [
+  { q: "Can I upgrade or downgrade?", a: "Yes, anytime. Changes apply next billing cycle." },
+  { q: "What if I exceed 500 minutes on Starter?", a: "$0.08/min overage, or we can auto-upgrade you to Pro for the month." },
+  { q: "Is there a contract?", a: "Monthly. Cancel with 30 days notice. Annual plans get 15% off." },
+  { q: "What's the free trial?", a: "7 days, full Pro features. We configure your AI, you test with real calls. No credit card required." },
 ];
 
 const faqs = [
@@ -147,6 +239,7 @@ export default function PickUpAI() {
   const [openFaq, setOpenFaq] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const trialHref = useMemo(() => "#pricing", []);
 
   const scrollToSection = (id) => {
@@ -170,7 +263,7 @@ export default function PickUpAI() {
         <nav className="mx-auto max-w-7xl">
           <div className="glass rounded-2xl px-4 py-3 sm:rounded-[1.5rem] sm:px-6 flex items-center justify-between">
             <Link to="/" className="shrink-0">
-              <Logo />
+              <PickUpAILogo />
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
@@ -249,20 +342,20 @@ export default function PickUpAI() {
                 >
                   Get Free 1-Week Trial
                 </a>
-                <a href="tel:+19028136359" className="btn-secondary w-full justify-center sm:w-auto sm:justify-start">
+                <a href={`tel:${DEMO_PHONE_RAW}`} className="btn-secondary w-full justify-center sm:w-auto sm:justify-start">
                   <PhoneIcon />
                   Call now to hear it live
                 </a>
               </div>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <a href="tel:+19028136359" className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 px-5 py-4 text-white shadow-xl shadow-slate-900/10 sm:w-auto sm:justify-start">
+                <a href={`tel:${DEMO_PHONE_RAW}`} className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 px-5 py-4 text-white shadow-xl shadow-slate-900/10 sm:w-auto sm:justify-start">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
                     <PhoneIcon />
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-[0.18em] text-slate-300">Live demo line</p>
-                    <p className="text-xl font-black">(902) 813-6359</p>
+                    <p className="text-xl font-black">{DEMO_PHONE}</p>
                   </div>
                 </a>
                 <p className="text-sm font-medium text-slate-500">Forward your line, keep your staff focused, and let the AI handle the repeat questions.</p>
@@ -330,7 +423,7 @@ export default function PickUpAI() {
               <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-white">
                 <PhoneIcon />
               </div>
-              <h2 className="mt-6 text-[1.85rem] font-black sm:text-3xl">Call (902) 813-6359</h2>
+              <h2 className="mt-6 text-[1.85rem] font-black sm:text-3xl">Call {DEMO_PHONE}</h2>
               <p className="mt-4 text-slate-300">Hear a live demo built around the kind of questions Island businesses answer all day long.</p>
               <div className="mt-8 rounded-3xl bg-white/5 p-5">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Ask it</p>
@@ -340,7 +433,7 @@ export default function PickUpAI() {
                   ))}
                 </ul>
               </div>
-              <a href="tel:+19028136359" className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
+              <a href={`tel:${DEMO_PHONE_RAW}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
                 Hear It Live
               </a>
             </div>
@@ -452,16 +545,19 @@ export default function PickUpAI() {
             <SectionHeading
               eyebrow="Pricing"
               title="Simple monthly plans with a free one-week trial"
-              description="Start with one number, validate the value, and scale up once the calls stop leaking."
+              description="Start with one number, validate the value, and scale up once the calls stop leaking. Click any plan to see full details."
             />
+
+            {/* Plan cards */}
             <div className="mt-12 grid gap-5 xl:grid-cols-3">
               {plans.map((plan) => (
-                <div
+                <button
                   key={plan.name}
-                  className={`relative rounded-[2rem] border p-7 shadow-premium ${
+                  onClick={() => setSelectedPlan(plan)}
+                  className={`relative rounded-[2rem] border p-7 shadow-premium text-left transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                     plan.popular
                       ? "border-primary-200 bg-slate-900 text-white"
-                      : "border-slate-100 bg-white text-slate-900"
+                      : "border-slate-100 bg-white text-slate-900 hover:border-primary-200"
                   }`}
                 >
                   {plan.popular && (
@@ -469,33 +565,182 @@ export default function PickUpAI() {
                       Most Popular
                     </div>
                   )}
-                  <p className={`text-sm font-black uppercase tracking-[0.18em] ${plan.popular ? "text-primary-200" : "text-primary-700"}`}>{plan.name}</p>
-                  <p className="mt-4 text-4xl font-black">{plan.price}</p>
-                  <p className={`mt-3 text-sm leading-relaxed ${plan.popular ? "text-slate-300" : "text-slate-500"}`}>{plan.description}</p>
-                  <div className={`mt-6 h-px ${plan.popular ? "bg-white/10" : "bg-slate-100"}`}></div>
-                  <ul className={`mt-6 space-y-3 text-sm ${plan.popular ? "text-slate-200" : "text-slate-600"}`}>
+
+                  <p className={`text-sm font-black uppercase tracking-[0.18em] ${plan.popular ? "text-primary-300" : "text-primary-700"}`}>{plan.name}</p>
+                  <p className="mt-3 text-4xl font-black">{plan.price}</p>
+                  <p className={`mt-1 text-xs font-bold ${plan.popular ? "text-slate-400" : "text-slate-400"}`}>{plan.setup}</p>
+                  <p className={`mt-3 text-sm leading-relaxed ${plan.popular ? "text-slate-300" : "text-slate-500"}`}>{plan.tagline}</p>
+
+                  <div className={`mt-5 h-px ${plan.popular ? "bg-white/10" : "bg-slate-100"}`}></div>
+
+                  <ul className={`mt-5 space-y-2.5 text-sm ${plan.popular ? "text-slate-200" : "text-slate-600"}`}>
                     {plan.perks.map((perk) => (
-                      <li key={perk} className="flex items-start gap-3">
-                        <span className={`mt-1 h-2.5 w-2.5 rounded-full ${plan.popular ? "bg-primary-300" : "bg-primary-500"}`}></span>
+                      <li key={perk} className="flex items-start gap-2.5">
+                        <svg className={`mt-0.5 h-4 w-4 shrink-0 ${plan.popular ? "text-primary-400" : "text-primary-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
                         <span>{perk}</span>
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href="mailto:peiwebstudio@gmail.com?subject=PickUp%20AI%20Free%20Trial"
-                    className={`mt-8 inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-bold transition ${
-                      plan.popular
-                        ? "bg-white text-slate-900 hover:bg-primary-50"
-                        : "bg-slate-900 text-white hover:bg-primary-600"
-                    }`}
-                  >
-                    Start Free Trial
-                  </a>
+
+                  <div className={`mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold transition ${
+                    plan.popular
+                      ? "bg-white text-slate-900"
+                      : "bg-slate-900 text-white"
+                  }`}>
+                    See full details
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Comparison table — horizontally scrollable on mobile */}
+            <div className="mt-16 overflow-x-auto rounded-[2rem] border border-slate-100 bg-white shadow-premium">
+              <table className="min-w-[540px] w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    <th className="px-4 sm:px-6 py-4 sm:py-5 text-left font-black text-slate-900 w-1/3">Feature</th>
+                    {plans.map((plan) => (
+                      <th key={plan.name} className={`px-4 sm:px-6 py-4 sm:py-5 text-center font-black ${plan.popular ? "text-primary-600" : "text-slate-900"}`}>
+                        <span className="block">{plan.name}</span>
+                        {plan.popular && <span className="mt-1 inline-block text-[9px] bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-black uppercase tracking-wide">Popular</span>}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row, idx) => (
+                    <tr key={row.feature} className={idx % 2 === 0 ? "bg-slate-50/60" : "bg-white"}>
+                      <td className="px-4 sm:px-6 py-3 sm:py-4 font-semibold text-slate-700 text-xs sm:text-sm">{row.feature}</td>
+                      {[row.starter, row.pro, row.concierge].map((val, i) => (
+                        <td key={i} className="px-4 sm:px-6 py-3 sm:py-4 text-center">
+                          {val === true ? (
+                            <svg className="mx-auto h-4 w-4 sm:h-5 sm:w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                          ) : val === false ? (
+                            <svg className="mx-auto h-4 w-4 sm:h-5 sm:w-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                          ) : (
+                            <span className="font-medium text-slate-700 text-xs sm:text-sm">{val}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pricing FAQ */}
+            <div className="mt-12 grid gap-4 sm:grid-cols-2">
+              {pricingFaqs.map((item) => (
+                <div key={item.q} className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
+                  <p className="font-black text-slate-900 text-[0.95rem]">"{item.q}"</p>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">{item.a}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
+
+        {/* Plan detail modal */}
+        {selectedPlan && (
+          <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center px-0 sm:px-4 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedPlan(null)}>
+            <div
+              className="relative w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-t-[2rem] sm:rounded-[2rem] bg-white shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              {/* Modal header */}
+              <div className={`px-7 pt-7 pb-6 rounded-t-[2rem] ${selectedPlan.popular ? "bg-slate-900 text-white" : "bg-slate-50 border-b border-slate-100"}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    {selectedPlan.popular && (
+                      <span className="inline-block mb-2 rounded-full bg-primary-500 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-white">Most Popular</span>
+                    )}
+                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${selectedPlan.popular ? "text-primary-300" : "text-primary-700"}`}>{selectedPlan.name}</p>
+                    <div className="mt-1 flex items-baseline gap-3 flex-wrap">
+                      <h2 className={`text-3xl font-black ${selectedPlan.popular ? "text-white" : "text-slate-900"}`}>{selectedPlan.price}</h2>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${selectedPlan.popular ? "bg-white/10 text-slate-300" : "bg-slate-200 text-slate-600"}`}>{selectedPlan.setup}</span>
+                    </div>
+                    <p className={`mt-2 text-sm leading-relaxed max-w-md ${selectedPlan.popular ? "text-slate-300" : "text-slate-500"}`}>
+                      For: {selectedPlan.tagline}
+                    </p>
+                  </div>
+                  <button onClick={() => setSelectedPlan(null)} className={`shrink-0 p-2 rounded-xl transition ${selectedPlan.popular ? "hover:bg-white/10 text-slate-400" : "hover:bg-slate-200 text-slate-500"}`}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="px-7 pb-7 pt-6 space-y-5">
+                {/* What's included */}
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400 mb-2.5">What's Included</p>
+                  <div className="rounded-2xl border border-slate-100 overflow-hidden">
+                    {selectedPlan.included.map((row, idx) => (
+                      <div key={row.feature} className={`flex flex-col sm:flex-row sm:items-start gap-0.5 sm:gap-3 px-5 py-3 text-sm ${idx % 2 === 0 ? "bg-slate-50" : "bg-white"}`}>
+                        <div className="flex items-center gap-2 sm:gap-3 sm:w-40 sm:shrink-0">
+                          <svg className="h-4 w-4 shrink-0 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                          <span className="font-bold text-slate-800">{row.feature}</span>
+                        </div>
+                        <span className="text-slate-500 leading-snug pl-6 sm:pl-0">{row.detail}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* What's NOT included */}
+                {selectedPlan.notIncluded.length > 0 && (
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400 mb-2.5">Not Included</p>
+                    <div className="rounded-2xl border border-slate-100 overflow-hidden">
+                      {selectedPlan.notIncluded.map((item, idx) => (
+                        <div key={item} className={`flex items-start gap-3 px-5 py-3 text-sm ${idx % 2 === 0 ? "bg-slate-50" : "bg-white"}`}>
+                          <svg className="mt-0.5 h-4 w-4 shrink-0 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                          <span className="text-slate-400">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Setup includes */}
+                <div className="rounded-2xl bg-primary-50 border border-primary-100 px-5 py-4">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-primary-700 mb-2.5">One-time Setup Includes</p>
+                  <ul className="space-y-1.5">
+                    {selectedPlan.setupIncludes.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
+                        <svg className="mt-0.5 h-4 w-4 shrink-0 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* CTAs */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}?subject=PickUp%20AI%20${encodeURIComponent(selectedPlan.name)}%20Plan%20%E2%80%94%20Free%20Trial&body=Hi%2C%20I%27m%20interested%20in%20the%20${encodeURIComponent(selectedPlan.name)}%20plan%20(${encodeURIComponent(selectedPlan.price)}).%20Please%20set%20me%20up%20for%20the%20free%201-week%20trial.`}
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-3.5 font-black text-white transition hover:bg-primary-700 text-sm"
+                  >
+                    Start Free Trial — {selectedPlan.name}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                  </a>
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}?subject=PickUp%20AI%20Question`}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-3.5 font-bold text-slate-700 transition hover:bg-slate-50 text-sm"
+                  >
+                    Ask a question
+                  </a>
+                </div>
+                <p className="text-center text-xs text-slate-400">No credit card required · 7-day full trial · Cancel anytime</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section id="faq" className="scroll-mt-28 px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-5xl">
@@ -538,11 +783,11 @@ export default function PickUpAI() {
                 </p>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <a href="mailto:peiwebstudio@gmail.com?subject=Start%20Free%201-Week%20Trial" className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
+                <a href={`mailto:${SUPPORT_EMAIL}?subject=Start%20Free%201-Week%20Trial`} className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
                   Start Free Trial
                 </a>
-                <a href="mailto:peiwebstudio@gmail.com" className="break-all text-center text-sm font-bold text-primary-200 underline-offset-4 hover:underline sm:text-left">
-                  peiwebstudio@gmail.com
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="break-all text-center text-sm font-bold text-primary-200 underline-offset-4 hover:underline sm:text-left">
+                  {SUPPORT_EMAIL}
                 </a>
               </div>
             </div>
@@ -550,22 +795,22 @@ export default function PickUpAI() {
         </section>
       </main>
 
-      <Footer onOpenLegal={setActiveModal} />
+      <SiteFooter variant="pickupai" onOpenLegal={setActiveModal} />
 
       <LegalModal
-        title="Privacy Policy"
+        title="Privacy Policy — PickUp AI"
         isOpen={activeModal === 'privacy'}
         onClose={() => setActiveModal(null)}
       >
-        <PrivacyPolicyContent />
+        <PickUpAIPrivacyContent />
       </LegalModal>
 
       <LegalModal
-        title="Terms of Service"
+        title="Terms of Service — PickUp AI"
         isOpen={activeModal === 'terms'}
         onClose={() => setActiveModal(null)}
       >
-        <TermsOfServiceContent />
+        <PickUpAITermsContent />
       </LegalModal>
     </div>
   );

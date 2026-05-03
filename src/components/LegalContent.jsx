@@ -38,6 +38,95 @@ export function PrivacyPolicyContent() {
   );
 }
 
+export function PickUpAIPrivacyContent() {
+  return (
+    <div className="text-sm sm:text-base space-y-5 text-slate-600 leading-relaxed">
+      <p className="text-xs text-slate-400">Last updated: May 2, 2026</p>
+
+      <p>PickUp AI ("we", "us", "our") is a service operated by PEI Web Studio and serves businesses in Prince Edward Island, Canada. This policy explains what data we collect when you use the PickUp AI phone agent service.</p>
+
+      <p className="font-bold text-slate-900 pt-2">1. Information We Collect</p>
+      <p>When you sign up for PickUp AI, we collect your business name, phone number(s), hours of operation, FAQs, and booking preferences so we can configure your AI agent. If you contact us by email, we retain that correspondence.</p>
+
+      <p className="font-bold text-slate-900 pt-2">2. Call Data</p>
+      <p>Calls handled by your AI agent are recorded and transcribed so you can review them in your dashboard. Recordings are stored securely and are accessible only to you and PEI Web Studio staff for monitoring and improvement purposes. You may request deletion of any recording at any time.</p>
+
+      <p className="font-bold text-slate-900 pt-2">3. Customer Data</p>
+      <p>When your customers call or text your PickUp AI number, their phone numbers and messages are processed to answer their queries and, where enabled, to create bookings. This data is stored only as long as necessary to operate the service and is never sold or shared with third parties.</p>
+
+      <p className="font-bold text-slate-900 pt-2">4. SMS Messaging</p>
+      <p>If you enable SMS replies, customer phone numbers are used solely to send automated responses related to their inquiry. You may disable SMS at any time through your dashboard or by contacting us.</p>
+
+      <p className="font-bold text-slate-900 pt-2">5. Third-Party Services</p>
+      <ul className="list-disc pl-5 space-y-1">
+        <li><strong>Telephony provider</strong> — call routing and recording are handled by our telephony partner. Their privacy policy governs that processing.</li>
+        <li><strong>Google Calendar</strong> — if you enable booking integration, your calendar availability is accessed via the Google Calendar API. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">Google's Privacy Policy</a>.</li>
+      </ul>
+
+      <p className="font-bold text-slate-900 pt-2">6. Data Retention</p>
+      <p>Call recordings and transcripts are retained for 90 days by default. Business configuration data is retained for the duration of your subscription plus 30 days after cancellation. You may request earlier deletion by emailing us.</p>
+
+      <p className="font-bold text-slate-900 pt-2">7. Your Rights</p>
+      <p>You may request access to, correction of, or deletion of your data at any time by contacting <a href="mailto:peiwebstudio@gmail.com" className="text-primary-600 underline">peiwebstudio@gmail.com</a>. We will respond within 5 business days.</p>
+
+      <p className="font-bold text-slate-900 pt-2">8. Children</p>
+      <p>PickUp AI is intended for business operators and is not directed at anyone under the age of 16.</p>
+
+      <p className="font-bold text-slate-900 pt-2">9. Changes to This Policy</p>
+      <p>We may update this policy from time to time. The "Last updated" date at the top will reflect any changes. Continued use of the service after an update constitutes acceptance of the revised policy.</p>
+
+      <p className="font-bold text-slate-900 pt-2">10. Contact</p>
+      <p>Questions? Reach us at <a href="mailto:peiwebstudio@gmail.com" className="text-primary-600 underline">peiwebstudio@gmail.com</a> or visit <a href="https://peiwebstudio.ca" target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">peiwebstudio.ca</a>.</p>
+    </div>
+  );
+}
+
+export function PickUpAITermsContent() {
+  return (
+    <div className="text-sm sm:text-base space-y-5 text-slate-600 leading-relaxed">
+      <p className="text-xs text-slate-400">Last updated: May 2, 2026</p>
+
+      <p>These Terms of Service govern your use of the PickUp AI phone agent service ("Service") operated by PEI Web Studio. By signing up or using the Service you agree to be bound by these terms.</p>
+
+      <p className="font-bold text-slate-900 pt-2">1. The Service</p>
+      <p>PickUp AI provides AI-powered phone answering, FAQ handling, booking assistance, and SMS reply services for businesses in Prince Edward Island. The Service is subscription-based with a one-time setup fee per plan.</p>
+
+      <p className="font-bold text-slate-900 pt-2">2. Free Trial</p>
+      <p>New customers receive a 7-day free trial with full Pro features. No credit card is required to start. At the end of the trial, your service will pause unless you select a paid plan.</p>
+
+      <p className="font-bold text-slate-900 pt-2">3. Billing & Cancellation</p>
+      <p>Subscriptions are billed monthly. Cancel with 30 days notice and your service continues through the end of the current billing period. Annual plans receive a 15% discount and are billed upfront. The one-time setup fee is non-refundable once onboarding has begun.</p>
+
+      <p className="font-bold text-slate-900 pt-2">4. Overage — Starter Plan</p>
+      <p>Starter plan customers receive 500 minutes per month. Calls beyond 500 minutes are billed at $0.08 per minute, invoiced at the end of the billing cycle. We will notify you when you reach 80% of your allotment.</p>
+
+      <p className="font-bold text-slate-900 pt-2">5. Acceptable Use</p>
+      <p>You agree to use PickUp AI only for legitimate business communication. You must not use the Service to make unsolicited calls, transmit spam, or violate any applicable law including CASL and TCPA. You are responsible for ensuring your customers have consented to receiving SMS messages where required.</p>
+
+      <p className="font-bold text-slate-900 pt-2">6. Your Responsibilities</p>
+      <p>You are responsible for keeping your business information, hours, and FAQs accurate. You must notify us promptly of any changes so we can update your AI agent. PEI Web Studio is not liable for incorrect information provided to callers as a result of outdated configuration.</p>
+
+      <p className="font-bold text-slate-900 pt-2">7. No Guarantee of Call Handling</p>
+      <p>While we aim for high availability, we do not guarantee that every call will be answered or that the AI will respond correctly in all situations. Complex or ambiguous queries may be escalated to voicemail or to you directly.</p>
+
+      <p className="font-bold text-slate-900 pt-2">8. Disclaimer of Warranties</p>
+      <p>The Service is provided "as is" and "as available" without warranties of any kind. We do not warrant uninterrupted or error-free operation.</p>
+
+      <p className="font-bold text-slate-900 pt-2">9. Limitation of Liability</p>
+      <p>To the maximum extent permitted by law, PEI Web Studio shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service, including missed calls or lost bookings.</p>
+
+      <p className="font-bold text-slate-900 pt-2">10. Governing Law</p>
+      <p>These terms are governed by the laws of the Province of Prince Edward Island and the federal laws of Canada applicable therein.</p>
+
+      <p className="font-bold text-slate-900 pt-2">11. Changes to These Terms</p>
+      <p>We reserve the right to update these terms. We will notify active customers by email at least 14 days before material changes take effect.</p>
+
+      <p className="font-bold text-slate-900 pt-2">12. Contact</p>
+      <p>Questions? Email <a href="mailto:peiwebstudio@gmail.com" className="text-primary-600 underline">peiwebstudio@gmail.com</a>.</p>
+    </div>
+  );
+}
+
 export function TermsOfServiceContent() {
   return (
     <div className="text-sm sm:text-base space-y-5 text-slate-600 leading-relaxed">

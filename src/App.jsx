@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 // Lazy load components for code splitting
 const StepForm = lazy(() => import("./components/StepForm"));
@@ -15,7 +15,6 @@ const PickUpAI = lazy(() => import("./components/PickUpAI"));
 
 // Import utilities (these are smaller, can be loaded eagerly)
 import { generateProfile } from "./utils/generateProfile";
-import { exportPDF } from "./utils/exportPDF";
 import { PrivacyPolicyContent, TermsOfServiceContent } from "./components/LegalContent";
 
 // Loading fallback component
@@ -78,6 +77,7 @@ function App() {
 // Inner component that uses router hooks
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [page, setPage] = useState("home");
   const [formData, setFormData] = useState(null);
   const [result, setResult] = useState(null);
@@ -85,11 +85,19 @@ function AppContent() {
   const [activeModal, setActiveModal] = useState(null);
   const [initialWantsMockup, setInitialWantsMockup] = useState(false);
 
+  // Reset to home when browser back navigates to / (not when startForm pushes to /)
+  React.useEffect(() => {
+    if (location.pathname === "/" && !location.state?.inFlow) {
+      setPage("home");
+    }
+  }, [location.pathname, location.state]);
+
   const handleReset = () => {
     setFormData(null);
     setResult(null);
     setError(null);
     setPage("home");
+    navigate("/", { replace: true });
   };
 
   const handleFormSubmit = async (data) => {
@@ -108,9 +116,15 @@ function AppContent() {
     }
   };
 
+  const handleExportPDF = async (res, form) => {
+    const { exportPDF } = await import("./utils/exportPDF");
+    exportPDF(res, form);
+  };
+
   const startForm = (wantsMockup = false) => {
     setInitialWantsMockup(wantsMockup);
     setPage("form");
+    navigate("/", { state: { inFlow: true } });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -148,7 +162,7 @@ function AppContent() {
               handleFormSubmit={handleFormSubmit}
               handleReset={handleReset}
               startForm={startForm}
-              onExportPDF={exportPDF}
+              onExportPDF={handleExportPDF}
             />
           } />
         </Routes>

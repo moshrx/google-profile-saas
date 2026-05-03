@@ -93,8 +93,12 @@ export default function StepForm({ onSubmit, initialWantsMockup = false }) {
     if (currentStep === 1) {
       if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
       if (!formData.address.trim()) newErrors.address = "Address is required";
-      if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
-        newErrors.website = "Website must start with http:// or https://";
+      if (formData.website) {
+        try {
+          new URL(formData.website);
+        } catch {
+          newErrors.website = "Please enter a valid URL (e.g. https://yourbusiness.ca)";
+        }
       }
     }
     if (currentStep === 2) {
@@ -288,7 +292,7 @@ export default function StepForm({ onSubmit, initialWantsMockup = false }) {
                       onBlur={() => handleBlur("city")}
                     >
                       <option value="">Select a city or town…</option>
-                      {PEI_CITIES.sort().map((c) => (
+                      {[...PEI_CITIES].sort().map((c) => (
                         <option key={c} value={c}>{c}</option>
                       ))}
                     </select>

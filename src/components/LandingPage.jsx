@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import Testimonials from './Testimonials';
+import PickUpAIPromo from './PickUpAIPromo';
 
 export default function LandingPage({ onGetStarted }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace('#', '');
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    }
+  }, []);
 
   const features = [
     {
@@ -122,20 +134,20 @@ export default function LandingPage({ onGetStarted }) {
           <div className="flex flex-col items-center gap-1 text-center sm:hidden">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse">New</span>
-              <span className="text-xs font-black">PickUp AI — Free 1-Week Trial</span>
+              <span className="text-xs font-black">PickUp AI</span>
             </div>
             <p className="text-[11px] font-medium text-white/90 leading-tight">
-              AI phone agent that answers calls 24/7. Tap to claim yours →
+              Your competitors answer at 2 AM. Do you? Tap to fix that →
             </p>
           </div>
           {/* Desktop: single row */}
           <div className="hidden sm:flex items-center justify-center gap-3">
             <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse shrink-0">New</span>
             <p className="text-sm font-bold">
-              Try <span className="font-black">PickUp AI</span> free for 1 week — an AI phone agent that answers calls 24/7 for your PEI business.
+              Your competitors are answering calls at 2 AM. <span className="font-black">Are you?</span> PickUp AI — free 1-week trial.
             </p>
             <span className="shrink-0 bg-white text-[#C34A36] font-black text-xs px-3 py-1 rounded-full whitespace-nowrap">
-              Claim Trial →
+              Claim Free Trial →
             </span>
           </div>
         </div>
@@ -152,14 +164,14 @@ export default function LandingPage({ onGetStarted }) {
               <button onClick={() => scrollToSection('how-it-works')} className="nav-link">How it works</button>
               <button onClick={() => scrollToSection('features')} className="nav-link">Features</button>
               <button onClick={() => scrollToSection('faq')} className="nav-link">FAQ</button>
-              <Link to="/grants" className="nav-link text-primary-600 hover:text-primary-700 font-bold">
-                Free Grant Check
+              <Link to="/pickupai" className="nav-link text-[#C34A36] hover:text-[#A33D2C] font-bold">
+                PickUp AI
               </Link>
             </div>
 
             <div className="flex items-center gap-3">
               <button
-                onClick={onGetStarted}
+                onClick={() => onGetStarted(false)}
                 className="hidden sm:flex bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-primary-600 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/10 text-sm"
               >
                 Get Started
@@ -190,15 +202,15 @@ export default function LandingPage({ onGetStarted }) {
                 <button onClick={() => scrollToSection('features')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">Features</button>
                 <button onClick={() => scrollToSection('faq')} className="nav-link py-3 px-4 rounded-xl hover:bg-slate-100 text-left">FAQ</button>
                 <Link 
-                  to="/grants" 
+                  to="/pickupai" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="nav-link py-3 px-4 rounded-xl hover:bg-primary-50 text-left text-primary-600 font-bold"
+                  className="nav-link py-3 px-4 rounded-xl hover:bg-[#C34A36]/10 text-left text-[#C34A36] font-bold"
                 >
-                  Free Grant Check
+                  PickUp AI
                 </Link>
                 <hr className="border-slate-200 my-2" />
                 <button
-                  onClick={() => { onGetStarted(); setMobileMenuOpen(false); }}
+                  onClick={() => { onGetStarted(false); setMobileMenuOpen(false); }}
                   className="bg-slate-900 text-white px-5 py-3 rounded-xl font-bold hover:bg-primary-600 transition-all text-center"
                 >
                   Get Started
@@ -284,11 +296,6 @@ export default function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* ── Testimonials Section ─────────────────────────────────────────── */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
-        <Testimonials />
-      </section>
-
       {/* ── Features Section ─────────────────────────────────────────────── */}
       <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 relative">
         <div className="max-w-7xl mx-auto">
@@ -303,8 +310,8 @@ export default function LandingPage({ onGetStarted }) {
               </p>
             </div>
             <div className="pb-0 md:pb-2">
-              <button 
-                onClick={onGetStarted}
+              <button
+                onClick={() => onGetStarted(false)}
                 className="text-primary-600 font-bold flex items-center gap-2 group text-sm sm:text-base"
               >
                 View all features 
@@ -363,13 +370,21 @@ export default function LandingPage({ onGetStarted }) {
           
           <div className="mt-12 sm:mt-20 text-center">
             <button
-              onClick={onGetStarted}
+              onClick={() => onGetStarted(false)}
               className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl sm:rounded-2xl font-black text-sm sm:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-primary-500/20 active:scale-95"
             >
               Start Building Now — It's Free
             </button>
           </div>
         </div>
+      </section>
+
+      {/* ── PickUp AI Promo ──────────────────────────────────────────────── */}
+      <PickUpAIPromo />
+
+      {/* ── Testimonials Section ─────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
+        <Testimonials />
       </section>
 
       {/* ── FAQ Section ─────────────────────────────────────────────────── */}
@@ -400,7 +415,7 @@ export default function LandingPage({ onGetStarted }) {
         <div className="max-w-4xl mx-auto text-center glass p-8 sm:p-12 md:p-16 rounded-3xl sm:rounded-[4rem] border-primary-100/50">
           <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 sm:mb-8">Ready to boost your local ranking?</h2>
           <button
-            onClick={onGetStarted}
+            onClick={() => onGetStarted(false)}
             className="btn-primary text-sm sm:text-xl px-8 sm:px-12 py-4 sm:py-5 w-full sm:w-auto"
           >
             Get My Free Kit Now

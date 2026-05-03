@@ -95,15 +95,15 @@ export function exportPDF(result, formData) {
 
   // ── Keywords (Feature 3) ─────────────────────────────────────────────────────
   addSectionHeader("Target Keywords (Local SEO Strategy)");
-  const k = result.competitorKeywords;
+  const { primary = [], local = [], longTail = [] } = result.competitorKeywords || {};
   addLabel("PRIMARY KEYWORDS");
-  addText(k.primary.join(", "), { fontSize: 10, indent: 4 });
+  addText(primary.join(", "), { fontSize: 10, indent: 4 });
   y += 4;
   addLabel("LOCAL KEYWORDS");
-  addText(k.local.join(", "), { fontSize: 10, indent: 4 });
+  addText(local.join(", "), { fontSize: 10, indent: 4 });
   y += 4;
   addLabel("LONG-TAIL KEYWORDS");
-  addText(k.longTail.join(", "), { fontSize: 10, indent: 4 });
+  addText(longTail.join(", "), { fontSize: 10, indent: 4 });
   drawLine();
 
   // ── Descriptions ────────────────────────────────────────────────────────────
@@ -125,7 +125,7 @@ export function exportPDF(result, formData) {
 
   // ── Google Posts ────────────────────────────────────────────────────────────
   addSectionHeader("Google Posts (Ready-to-Publish)");
-  result.googlePosts.forEach((post, i) => {
+  (result.googlePosts || []).forEach((post, i) => {
     addLabel(`GOOGLE POST ${i + 1}`);
     addText(post, { fontSize: 9, indent: 4 });
     y += 8;
@@ -135,13 +135,13 @@ export function exportPDF(result, formData) {
   // ── Reviews ─────────────────────────────────────────────────────────────────
   addSectionHeader("Review Response Templates");
   addLabel("POSITIVE RESPONSE (5-Star)");
-  addText(result.reviewResponses.positive, { fontSize: 10, indent: 4 });
+  addText(result.reviewResponses?.positive || "N/A", { fontSize: 10, indent: 4 });
   y += 8;
   addLabel("NEUTRAL RESPONSE (3-Star)");
-  addText(result.reviewResponses.neutral, { fontSize: 10, indent: 4 });
+  addText(result.reviewResponses?.neutral || "N/A", { fontSize: 10, indent: 4 });
   y += 8;
   addLabel("NEGATIVE RESPONSE (1-Star)");
-  addText(result.reviewResponses.negative, { fontSize: 10, indent: 4 });
+  addText(result.reviewResponses?.negative || "N/A", { fontSize: 10, indent: 4 });
   drawLine();
 
   // ── FAQs ────────────────────────────────────────────────────────────────────
@@ -156,7 +156,7 @@ export function exportPDF(result, formData) {
   // ── Categories ───────────────────────────────────────────────────────────────
   drawLine();
   addSectionHeader("Suggested Categories");
-  result.categories.forEach((cat, i) => {
+  (result.categories || []).forEach((cat, i) => {
     const prefix = i === 0 ? "PRIMARY CATEGORY:" : "SECONDARY CATEGORY:";
     addText(`${prefix}  ${cat}`, { fontSize: 10, indent: 4 });
     y += 4;
@@ -171,6 +171,6 @@ export function exportPDF(result, formData) {
     doc.text(`ListedPEI · Generated for ${formData.businessName} · Page ${p} of ${totalPages}`, PAGE_W / 2, PAGE_H - 20, { align: "center" });
   }
 
-  const safeName = formData.businessName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+  const safeName = (formData.businessName || "business").replace(/[^a-z0-9]/gi, "_").toLowerCase();
   doc.save(`listedpei_kit_${safeName}.pdf`);
 }

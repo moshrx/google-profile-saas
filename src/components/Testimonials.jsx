@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Testimonials = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -15,32 +18,28 @@ const Testimonials = () => {
       { threshold: 0.1 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
+    observer.observe(el);
+    return () => observer.unobserve(el);
   }, []);
 
   const testimonials = [
     {
-      quote: "ListedPEI completely changed how my bakery shows up on Google. We had a 40% increase in calls within the first two weeks!",
-      author: "Sarah MacDonald",
-      business: "Island Crust Bakery",
+      quote: "ListedPEI gave us a polished Google presence we never had time to build ourselves. The SEO kit was plug-and-play — we just copied it straight in.",
+      author: "Cricket PEI",
+      business: "Cricket PEI — Charlottetown",
+      initials: "CP",
     },
     {
-      quote: "I never knew what to put on my Google Business page. The AI generated five perfect posts and gave me exact responses to use for reviews.",
-      author: "David Gallant",
-      business: "Gallant Auto Repair",
+      quote: "Our customers were constantly calling to ask about hours, bin prices, and our location. ListedPEI helped us write a profile that answers all that before they even pick up the phone.",
+      author: "Lootbins PEI",
+      business: "Lootbins PEI — Stratford",
+      initials: "LB",
     },
     {
-      quote: "The keywords suggestion alone was worth its weight in gold. I'm ranking higher for 'Montague Seafood' than ever before!",
-      author: "Marie Arsenault",
-      business: "Tide & Time Seafood",
+      quote: "I was skeptical an AI tool could nail the PEI local feel, but the descriptions and posts it generated sounded exactly like us. Ranking higher and getting more calls now.",
+      author: "Island Business Owner",
+      business: "Listed PEI Partner",
+      initials: "PEI",
     }
   ];
 
@@ -84,9 +83,14 @@ const Testimonials = () => {
                 "{t.quote}"
               </p>
               
-              <div className="relative z-10">
-                <p className="font-bold text-slate-900 text-sm sm:text-base">{t.author}</p>
-                <p className="text-xs sm:text-sm text-primary-600 font-medium">{t.business}</p>
+              <div className="relative z-10 flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-xs font-black text-white">
+                  {t.initials}
+                </div>
+                <div>
+                  <p className="font-bold text-slate-900 text-sm sm:text-base">{t.author}</p>
+                  <p className="text-xs sm:text-sm text-primary-600 font-medium">{t.business}</p>
+                </div>
               </div>
             </div>
           ))}

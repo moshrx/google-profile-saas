@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-  <rect width="24" height="24" rx="6" fill="#0f172a"/>
-  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="#0ea5e9" opacity="0.2"/>
-  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="12" cy="10" r="3" stroke="#fff" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background rounded square -->
+  <rect width="32" height="32" rx="8" fill="#0f172a"/>
+  <!-- Phone handset shape -->
+  <path d="M22 20.923v2.25a1.5 1.5 0 0 1-1.636 1.5A14.897 14.897 0 0 1 14 22.36a14.662 14.662 0 0 1-4.5-4.5 14.897 14.897 0 0 1-2.312-6.432A1.5 1.5 0 0 1 8.683 10h2.25a1.5 1.5 0 0 1 1.5 1.29c.095.675.263 1.336.504 1.966a1.5 1.5 0 0 1-.338 1.583l-.952.953a12 12 0 0 0 4.5 4.5l.952-.953a1.5 1.5 0 0 1 1.584-.337c.63.24 1.29.408 1.966.503A1.5 1.5 0 0 1 22 20.923z" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- AI sparkle dot top right -->
+  <circle cx="23" cy="9" r="2.5" fill="#C34A36"/>
+  <circle cx="23" cy="9" r="1.2" fill="#fff"/>
 </svg>
