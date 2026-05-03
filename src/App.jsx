@@ -33,30 +33,49 @@ function PageLoader() {
 }
 
 /**
- * Error Boundary Component
+ * Error Boundary Component — logs and displays real errors
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, info: null };
   }
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
   }
+  componentDidCatch(error, info) {
+    console.error("[ListedPEI ErrorBoundary]", error, info);
+    this.setState({ info });
+  }
   render() {
     if (this.state.hasError) {
+      const { error, info } = this.state;
+      const errorText = `${error?.name || "Error"}: ${error?.message || "Unknown error"}\n${info?.componentStack || ""}`;
       return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 text-center">
-          <div className="card max-w-md p-6 sm:p-8 shadow-xl border-t-4 border-red-500">
-            <div className="text-4xl mb-4">⚠️</div>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-2">Something went wrong</h2>
-            <p className="text-slate-500 mb-6 font-medium text-sm sm:text-base">The application encountered a rendering error. This usually happens if the AI returns incomplete data.</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary w-full bg-slate-800 hover:bg-slate-900 text-sm"
-            >
-              Reload Application
-            </button>
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="card max-w-lg w-full p-6 sm:p-8 shadow-xl border-t-4 border-red-500">
+            <div className="text-4xl mb-4 text-center">⚠️</div>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-2 text-center">Something went wrong</h2>
+            <p className="text-slate-500 mb-4 font-medium text-sm text-center">
+              A rendering error occurred. Details below — please share this with support.
+            </p>
+            <div className="bg-slate-900 text-slate-200 p-4 rounded-xl text-left text-xs font-mono overflow-auto max-h-64 mb-4">
+              <pre className="whitespace-pre-wrap break-words">{errorText}</pre>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="btn-primary w-full bg-slate-800 hover:bg-slate-900 text-sm"
+              >
+                Reload Application
+              </button>
+              <button
+                onClick={() => navigator.clipboard.writeText(errorText)}
+                className="btn-secondary w-full text-sm"
+              >
+                Copy Error
+              </button>
+            </div>
           </div>
         </div>
       );
