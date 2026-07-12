@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 import { SUPPORT_EMAIL } from "../utils/constants";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+// ⚠️ SECURITY: This key is exposed in the browser bundle. Before production,
+// proxy these requests through a serverless function that holds the key
+// server-side instead of shipping it to every visitor.
+const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
 const SYSTEM_PROMPT = `You are the GrantReady PEI AI assistant — a friendly, knowledgeable guide for small business owners in Prince Edward Island, Canada who want to find and apply for government grants.
 
@@ -99,24 +102,18 @@ export default function GrantChat({ defaultOpen = false }) {
   const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chat, setChat] = useState(null);
   const [showSuggested, setShowSuggested] = useState(true);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const clientRef = useRef(null);
 
-  // Init Gemini chat session once
+  // Init Claude client once
   useEffect(() => {
     if (!API_KEY) return;
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: SYSTEM_PROMPT,
+    clientRef.current = new Anthropic({
+      apiKey: API_KEY,
+      dangerouslyAllowBrowser: true,
     });
-    const session = model.startChat({
-      history: [],
-      generationConfig: { maxOutputTokens: 1200, temperature: 0.7 },
-    });
-    setChat(session);
   }, []);
 
   // Scroll to bottom on new messages
@@ -134,14 +131,33 @@ export default function GrantChat({ defaultOpen = false }) {
     if (!trimmed || loading) return;
 
     setShowSuggested(false);
-    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
+    const nextMessages = [...messages, { role: "user", text: trimmed }];
+    setMessages(nextMessages);
     setInput("");
     setLoading(true);
 
     try {
-      if (!chat) throw new Error("Chat not initialised");
-      const result = await chat.sendMessage(trimmed);
-      const reply = result.response.text();
+      if (!clientRef.current) throw new Error("Chat not initialised");
+      // Claude's API is stateless — send the full history each turn.
+      // Drop the local welcome bubble; it isn't part of the model conversation.
+      const history = nextMessages
+        .filter((m, i) => !(i === 0 && m === WELCOME_MESSAGE))
+        .map((m) => ({
+          role: m.role === "user" ? "user" : "assistant",
+          content: m.text,
+        }));
+
+      const response = await clientRef.current.messages.create({
+        model: "claude-opus-4-8",
+        max_tokens: 1200,
+        system: SYSTEM_PROMPT,
+        messages: history,
+      });
+
+      const reply = response.content
+        .filter((block) => block.type === "text")
+        .map((block) => block.text)
+        .join("");
       setMessages((prev) => [...prev, { role: "model", text: reply }]);
     } catch {
       setMessages((prev) => [
@@ -191,7 +207,7 @@ export default function GrantChat({ defaultOpen = false }) {
             <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs font-black">G</div>
             <div>
               <p className="text-white font-black text-sm leading-none">GrantReady AI</p>
-              <p className="text-slate-400 text-xs mt-0.5">PEI grants assistant · powered by Gemini</p>
+              <p className="text-slate-400 text-xs mt-0.5">PEI grants assistant · powered by Claude</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -233,7 +249,7 @@ export default function GrantChat({ defaultOpen = false }) {
           {/* AI Policy disclaimer */}
           <div className="px-4 pt-2 pb-1 shrink-0">
             <p className="text-[10px] text-slate-400 leading-tight">
-              AI-generated responses may not be 100% accurate. Always verify grant amounts, deadlines, and eligibility on the official <a href="https://www.princeedwardisland.ca/en/information/innovation-pei" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Innovation PEI</a> website. Chats are processed by Google Gemini and are not stored by ListedPEI.
+              AI-generated responses may not be 100% accurate. Always verify grant amounts, deadlines, and eligibility on the official <a href="https://www.princeedwardisland.ca/en/information/innovation-pei" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Innovation PEI</a> website. Chats are processed by Anthropic Claude and are not stored by ListedPEI.
             </p>
           </div>
 

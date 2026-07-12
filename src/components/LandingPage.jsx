@@ -95,7 +95,7 @@ export default function LandingPage({ onGetStarted }) {
     },
     {
       title: "AI Generation",
-      description: "Our Gemini-powered engine crafts your complete SEO kit in seconds.",
+      description: "Our Claude-powered engine crafts your complete SEO kit in seconds.",
       step: "03"
     },
     {
@@ -284,7 +284,7 @@ export default function LandingPage({ onGetStarted }) {
         {/* Value Prop Cards */}
         <div className="mt-12 sm:mt-20 max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           {[
-            { title: "AI-Powered", desc: "Latest Gemini 2.5 Flash model" },
+            { title: "AI-Powered", desc: "Latest Claude Opus model" },
             { title: "Local First", desc: "Expertly tuned for PEI cities" },
             { title: "100% Free", desc: "Zero cost for island businesses" }
           ].map((item, idx) => (
@@ -397,7 +397,7 @@ export default function LandingPage({ onGetStarted }) {
           <div className="space-y-4 sm:space-y-6">
             {[
               { q: "Is it really free?", a: "Yes, ListedPEI is 100% free for small businesses in Prince Edward Island. No credit card or sign-up required." },
-              { q: "How does the AI work?", a: "We use Google's latest Gemini AI models, specifically tuned with local PEI knowledge, to generate high-converting SEO content." },
+              { q: "How does the AI work?", a: "We use Anthropic's latest Claude AI models, specifically tuned with local PEI knowledge, to generate high-converting SEO content." },
               { q: "What do I get in my kit?", a: "You get a long description, short description, 5 Google posts, review response templates, category suggestions, and SEO keywords." },
               { q: "Why focus only on PEI?", a: "Local search is all about relevance. By focusing on the Island, we can provide much more accurate and effective SEO results than generic tools." }
             ].map((faq, idx) => (

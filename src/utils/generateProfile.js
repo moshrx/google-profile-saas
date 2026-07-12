@@ -1,15 +1,23 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
 /**
- * Calls the Gemini 2.5 Flash API with enhanced prompt for Photo Tips & Keywords.
+ * Calls Claude (Opus 4.8) with an enhanced prompt for Photo Tips & Keywords.
+ *
+ * ⚠️ SECURITY: This runs in the browser, so the API key is exposed to anyone
+ * who opens DevTools. `dangerouslyAllowBrowser` is required to run the SDK
+ * client-side. Before production, move this call behind a serverless proxy
+ * (e.g. a Vercel function) that holds the key server-side and forwards the
+ * request, and have the browser call that proxy instead.
  */
 export async function generateProfile(formData) {
   if (!API_KEY || !API_KEY.trim()) throw new Error("API key is missing.");
 
-  const genAI = new GoogleGenerativeAI(API_KEY.trim());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const client = new Anthropic({
+    apiKey: API_KEY.trim(),
+    dangerouslyAllowBrowser: true,
+  });
 
   const prompt = `You are a local SEO expert specializing in Google Business Profiles for small businesses in PEI, Canada.
 
@@ -60,11 +68,23 @@ RULES:
 - Each post in googlePosts must be plain text with NO markdown formatting.
 - Photo tips must be ultra-specific to ${formData.category}.
 - Keywords must reflect real PEI-specific searches (e.g. including cities like Charlottetown).
-- Total 10 keywords across primary, local, and longTail groups.`;
+- Total 10 keywords across primary, local, and longTail groups.
+- Respond with ONLY the JSON object, no preamble and no code fences.`;
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  let text = response.text().trim();
+  // Stream so the large-output request doesn't hit an HTTP timeout.
+  const stream = client.messages.stream({
+    model: "claude-opus-4-8",
+    max_tokens: 8000,
+    thinking: { type: "adaptive" },
+    messages: [{ role: "user", content: prompt }],
+  });
+  const message = await stream.finalMessage();
+
+  let text = message.content
+    .filter((block) => block.type === "text")
+    .map((block) => block.text)
+    .join("")
+    .trim();
 
   // Clean JSON markdown
   text = text.replace(/^```(?:json)?\s*/im, "").replace(/\s*```\s*$/im, "").trim();
@@ -89,8 +109,8 @@ RULES:
   return {
     longDescription: truncate(stripStars(parsed.longDescription), 750) || "Description not available.",
     shortDescription: truncate(stripStars(parsed.shortDescription), 250) || "Short description not available.",
-    googlePosts: Array.isArray(parsed.googlePosts) 
-      ? parsed.googlePosts.map(post => stripStars(post)) 
+    googlePosts: Array.isArray(parsed.googlePosts)
+      ? parsed.googlePosts.map(post => stripStars(post))
       : ["Post error."],
     reviewResponses: {
       positive: stripStars(parsed.reviewResponses?.positive) || "...",
