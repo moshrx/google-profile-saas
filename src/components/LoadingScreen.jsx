@@ -52,7 +52,7 @@ export default function LoadingScreen() {
 
       {/* Bouncing dots */}
       <div className="flex items-center gap-2 mt-8 sm:mt-10">
-        <span className="text-primary-300 text-xs sm:text-sm mr-2">Powered by Gemini AI</span>
+        <span className="text-primary-300 text-xs sm:text-sm mr-2">Powered by Claude AI</span>
         <div className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
           <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
