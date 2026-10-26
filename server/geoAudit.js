@@ -151,8 +151,16 @@ function fallbackAnalysis(scores) {
 
 export async function runGeoAudit(urlValue) {
   const requestedUrl = normalizeWebsiteUrl(urlValue);
-  const homeFetch = await safeFetch(requestedUrl);
-  if (!homeFetch.response.ok) throw new Error(`The website returned HTTP ${homeFetch.response.status}.`);
+  const homeFetch = await safeFetch(requestedUrl, { browserFallback: true });
+  if (!homeFetch.response.ok) {
+    if (homeFetch.response.status === 403) {
+      throw new Error("This website’s security service blocked our automated audit. The website may still be working normally. Please try again later or audit another public page from the same website.");
+    }
+    if (homeFetch.response.status === 429) {
+      throw new Error("This website temporarily rate-limited the audit. Please wait a few minutes and try again.");
+    }
+    throw new Error(`The website returned HTTP ${homeFetch.response.status}.`);
+  }
   if (!/text\/html|application\/xhtml\+xml/i.test(homeFetch.response.headers.get("content-type") || "")) {
     throw new Error("The submitted URL is not an HTML website.");
   }
