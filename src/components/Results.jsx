@@ -1,6 +1,6 @@
 import { useState } from "react";
-import emailjs from '@emailjs/browser';
 import { SUPPORT_EMAIL } from '../utils/constants';
+import { sendKitEmail, sendLeadEmail } from '../utils/email';
 import { useToast } from "../hooks/useToast";
 import { ToastContainer } from "./Toast";
 import { Link } from "react-router-dom";
@@ -174,12 +174,6 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
     return localStorage.getItem('listedpei_feedback') ? true : false;
   });
 
-  // EmailJS configuration
-  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-  const kitTemplateId = import.meta.env.VITE_EMAILJS_KIT_TEMPLATE_ID;
-  const leadTemplateId = import.meta.env.VITE_EMAILJS_LEAD_TEMPLATE_ID;
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
   // Guard for missing data
   if (!result || !formData) {
     return (
@@ -194,16 +188,10 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
     );
   }
 
-  // Handle Send Kit Email via EmailJS
+  // Deliver the kit through the server-side email endpoint.
   const handleSendKitEmail = async (e) => {
     e.preventDefault();
     if (!email) return;
-
-    // Check if EmailJS is configured
-    if (!serviceId || serviceId === "your_service_id") {
-      addToast("EmailJS not configured. Please check .env file.", "error");
-      return;
-    }
 
     setIsSendingEmail(true);
 
@@ -240,7 +228,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
         categories: (result.categories || []).join(", "),
       };
 
-      await emailjs.send(serviceId, kitTemplateId, templateParams, { publicKey });
+      await sendKitEmail(templateParams);
 
       // Save to localStorage for admin
       let leads = [];
@@ -255,21 +243,16 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
       addToast("Kit sent to your email successfully!");
       setEmail("");
     } catch (err) {
-      console.error("EmailJS Error:", err);
-      addToast("Failed to send email. Please try again.", "error");
+      console.error("Kit email error:", err);
+      addToast(err.message || "Failed to send email. Please try again.", "error");
     } finally {
       setIsSendingEmail(false);
     }
   };
 
-  // Handle Website Lead via EmailJS
+  // Deliver website leads through the server-side email endpoint.
   const handleWebsiteLeadSubmit = async (e) => {
     e.preventDefault();
-
-    if (!serviceId || serviceId === "your_service_id") {
-      addToast("EmailJS not configured. Please check .env file.", "error");
-      return;
-    }
 
     setIsSendingWebsiteLead(true);
 
@@ -303,7 +286,7 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
           : ""),
       };
 
-      await emailjs.send(serviceId, leadTemplateId, templateParams, { publicKey });
+      await sendLeadEmail(templateParams);
 
       // Save to localStorage
       let leads = [];
@@ -318,8 +301,8 @@ export default function Results({ result, formData, onReset, onExportPDF }) {
       setWebsiteLeadSent(true);
       addToast("Website mockup request sent!");
     } catch (err) {
-      console.error("EmailJS Error:", err);
-      addToast("Request failed — please try again later.", "error");
+      console.error("Website lead email error:", err);
+      addToast(err.message || "Request failed — please try again later.", "error");
     } finally {
       setIsSendingWebsiteLead(false);
     }

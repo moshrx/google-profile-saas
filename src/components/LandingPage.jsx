@@ -95,7 +95,7 @@ export default function LandingPage({ onGetStarted }) {
     },
     {
       title: "AI Generation",
-      description: "Our Claude-powered engine crafts your complete SEO kit in seconds.",
+      description: "Our OpenAI-powered engine crafts your complete SEO kit in seconds.",
       step: "03"
     },
     {
@@ -124,7 +124,7 @@ export default function LandingPage({ onGetStarted }) {
 
       {/* ── Announcement Banner ─────────────────────────────────────────── */}
       <Link
-        to="/pickupai"
+        to="/geo-audit"
         className="fixed top-0 left-0 right-0 z-[60] block bg-gradient-to-r from-[#C34A36] via-primary-600 to-accent-600 text-white overflow-hidden"
       >
         <div className="relative px-4 py-2.5 sm:py-2.5">
@@ -134,20 +134,20 @@ export default function LandingPage({ onGetStarted }) {
           <div className="flex flex-col items-center gap-1 text-center sm:hidden">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse">New</span>
-              <span className="text-xs font-black">PickUp AI</span>
+              <span className="text-xs font-black">Free AI Visibility Audit</span>
             </div>
             <p className="text-[11px] font-medium text-white/90 leading-tight">
-              Your competitors answer at 2 AM. Do you? Tap to fix that →
+              Will ChatGPT recommend your business? Find out free →
             </p>
           </div>
           {/* Desktop: single row */}
           <div className="hidden sm:flex items-center justify-center gap-3">
             <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse shrink-0">New</span>
             <p className="text-sm font-bold">
-              Your competitors are answering calls at 2 AM. <span className="font-black">Are you?</span> PickUp AI — free 1-week trial.
+              Can ChatGPT, Google AI and Copilot understand your business? <span className="font-black">Find out free.</span>
             </p>
             <span className="shrink-0 bg-white text-[#C34A36] font-black text-xs px-3 py-1 rounded-full whitespace-nowrap">
-              Claim Free Trial →
+              Run Free Audit →
             </span>
           </div>
         </div>
@@ -166,6 +166,9 @@ export default function LandingPage({ onGetStarted }) {
               <button onClick={() => scrollToSection('faq')} className="nav-link">FAQ</button>
               <Link to="/pickupai" className="nav-link text-[#C34A36] hover:text-[#A33D2C] font-bold">
                 PickUp AI
+              </Link>
+              <Link to="/geo-audit" className="nav-link text-primary-700 font-bold">
+                AI Visibility Audit
               </Link>
             </div>
 
@@ -207,6 +210,13 @@ export default function LandingPage({ onGetStarted }) {
                   className="nav-link py-3 px-4 rounded-xl hover:bg-[#C34A36]/10 text-left text-[#C34A36] font-bold"
                 >
                   PickUp AI
+                </Link>
+                <Link
+                  to="/geo-audit"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="nav-link py-3 px-4 rounded-xl hover:bg-primary-50 text-left text-primary-700 font-bold"
+                >
+                  Free AI Visibility Audit
                 </Link>
                 <hr className="border-slate-200 my-2" />
                 <button
@@ -284,7 +294,7 @@ export default function LandingPage({ onGetStarted }) {
         {/* Value Prop Cards */}
         <div className="mt-12 sm:mt-20 max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           {[
-            { title: "AI-Powered", desc: "Latest Claude Opus model" },
+            { title: "AI-Powered", desc: "Fast, modern OpenAI models" },
             { title: "Local First", desc: "Expertly tuned for PEI cities" },
             { title: "100% Free", desc: "Zero cost for island businesses" }
           ].map((item, idx) => (
@@ -397,7 +407,7 @@ export default function LandingPage({ onGetStarted }) {
           <div className="space-y-4 sm:space-y-6">
             {[
               { q: "Is it really free?", a: "Yes, ListedPEI is 100% free for small businesses in Prince Edward Island. No credit card or sign-up required." },
-              { q: "How does the AI work?", a: "We use Anthropic's latest Claude AI models, specifically tuned with local PEI knowledge, to generate high-converting SEO content." },
+              { q: "How does the AI work?", a: "We use OpenAI models with prompts tailored to PEI businesses to generate practical Google Business Profile content." },
               { q: "What do I get in my kit?", a: "You get a long description, short description, 5 Google posts, review response templates, category suggestions, and SEO keywords." },
               { q: "Why focus only on PEI?", a: "Local search is all about relevance. By focusing on the Island, we can provide much more accurate and effective SEO results than generic tools." }
             ].map((faq, idx) => (

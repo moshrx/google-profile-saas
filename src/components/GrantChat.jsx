@@ -1,52 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Anthropic from "@anthropic-ai/sdk";
 import { SUPPORT_EMAIL } from "../utils/constants";
-
-// ⚠️ SECURITY: This key is exposed in the browser bundle. Before production,
-// proxy these requests through a serverless function that holds the key
-// server-side instead of shipping it to every visitor.
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
-
-const SYSTEM_PROMPT = `You are the GrantReady PEI AI assistant — a friendly, knowledgeable guide for small business owners in Prince Edward Island, Canada who want to find and apply for government grants.
-
-You know everything about PEI business grants including:
-
-Innovation PEI Programs:
-- Web Presence Assistance Program: covers up to 50% of website development costs. For businesses needing to establish/improve online presence. No minimum time in business required.
-- Business Development Support: up to $5,000 for business planning, market research, consulting. Requires 1+ years in business with at least 2 employees.
-- Digital Adoption Support: up to $2,500 for adopting digital technologies, software, tools. For solo operators and small businesses (1–10 employees).
-- Small Business Investment Grant: various amounts for capital investment in equipment, facilities improvements.
-- Tourism Business Improvement Program: for tourism operators, covers marketing and product development.
-- Export Development Program: for businesses looking to sell outside PEI.
-
-Federal Programs available to PEI businesses:
-- Canada Digital Adoption Program (CDAP): up to $15,000 for digital transformation. Ended March 2024 but encourage checking for successors.
-- Canada Small Business Financing Program: loans up to $1.15M for equipment, leaseholds, intangible assets.
-- BDC (Business Development Bank): flexible loans and advisory services.
-- ACOA (Atlantic Canada Opportunities Agency): various funding for Atlantic Canadian businesses — Business Scale-Up and Productivity, Innovation, Community Economic Development.
-- Women Entrepreneurship Fund, Black Entrepreneurship Program, Indigenous Business grants for qualifying applicants.
-
-Key eligibility rules:
-- Most PEI provincial grants require the business to be registered and operating in PEI.
-- Many require a minimum number of employees or years of operation.
-- Most are cost-sharing (you contribute a portion).
-- Applications require a business plan, financial statements, and project quotes.
-- Grant amounts vary and are usually reimbursement-based (you spend first, then claim).
-
-ListedPEI context:
-- ListedPEI is a free tool that generates Google Business Profile SEO kits for PEI businesses — descriptions, posts, review templates, keywords.
-- PickUp AI is a service by ListedPEI that provides AI phone agents for PEI businesses — answers calls 24/7, handles bookings, FAQs. Plans start at $199/mo.
-- PEI Web Studio (${SUPPORT_EMAIL}) builds websites and digital marketing for Island businesses and can help with grant applications.
-
-Formatting rules — follow these strictly:
-- Write in plain text only. No asterisks, no bold, no markdown of any kind.
-- Use plain dashes (-) for bullet lists, never asterisks (*) or double asterisks (**).
-- Never start a sentence with ** or end with **. If you feel the urge to bold something, just write it normally.
-- Keep responses short and complete. 2–4 short paragraphs or a brief bullet list is ideal.
-- Always finish your thought. Never cut off mid-sentence.
-- End with one helpful next step or a follow-up offer.
-- If asked what you can help with: finding grants, eligibility questions, what documents to prepare, application tips, and PEI business questions.
-- Never make up grant amounts or deadlines you are unsure about — say "check the Innovation PEI website for current figures."`;
 
 const WELCOME_MESSAGE = {
   role: "model",
@@ -105,16 +58,6 @@ export default function GrantChat({ defaultOpen = false }) {
   const [showSuggested, setShowSuggested] = useState(true);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
-  const clientRef = useRef(null);
-
-  // Init Claude client once
-  useEffect(() => {
-    if (!API_KEY) return;
-    clientRef.current = new Anthropic({
-      apiKey: API_KEY,
-      dangerouslyAllowBrowser: true,
-    });
-  }, []);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -137,28 +80,20 @@ export default function GrantChat({ defaultOpen = false }) {
     setLoading(true);
 
     try {
-      if (!clientRef.current) throw new Error("Chat not initialised");
-      // Claude's API is stateless — send the full history each turn.
-      // Drop the local welcome bubble; it isn't part of the model conversation.
       const history = nextMessages
         .filter((m, i) => !(i === 0 && m === WELCOME_MESSAGE))
         .map((m) => ({
           role: m.role === "user" ? "user" : "assistant",
           content: m.text,
         }));
-
-      const response = await clientRef.current.messages.create({
-        model: "claude-opus-4-8",
-        max_tokens: 1200,
-        system: SYSTEM_PROMPT,
-        messages: history,
+      const response = await fetch("/api/grant-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
       });
-
-      const reply = response.content
-        .filter((block) => block.type === "text")
-        .map((block) => block.text)
-        .join("");
-      setMessages((prev) => [...prev, { role: "model", text: reply }]);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Chat request failed");
+      setMessages((prev) => [...prev, { role: "model", text: payload.reply }]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -207,7 +142,7 @@ export default function GrantChat({ defaultOpen = false }) {
             <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs font-black">G</div>
             <div>
               <p className="text-white font-black text-sm leading-none">GrantReady AI</p>
-              <p className="text-slate-400 text-xs mt-0.5">PEI grants assistant · powered by Claude</p>
+              <p className="text-slate-400 text-xs mt-0.5">PEI grants assistant · powered by OpenAI</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -249,7 +184,7 @@ export default function GrantChat({ defaultOpen = false }) {
           {/* AI Policy disclaimer */}
           <div className="px-4 pt-2 pb-1 shrink-0">
             <p className="text-[10px] text-slate-400 leading-tight">
-              AI-generated responses may not be 100% accurate. Always verify grant amounts, deadlines, and eligibility on the official <a href="https://www.princeedwardisland.ca/en/information/innovation-pei" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Innovation PEI</a> website. Chats are processed by Anthropic Claude and are not stored by ListedPEI.
+              AI-generated responses may not be 100% accurate. Always verify grant amounts, deadlines, and eligibility on the official <a href="https://www.princeedwardisland.ca/en/information/innovation-pei" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Innovation PEI</a> website. Chats are processed by OpenAI and are not stored by ListedPEI.
             </p>
           </div>
 
