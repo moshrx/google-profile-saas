@@ -7,10 +7,20 @@ import { PickUpAIPrivacyContent, PickUpAITermsContent } from "./LegalContent";
 import { DEMO_PHONE, DEMO_PHONE_RAW, SUPPORT_EMAIL } from "../utils/constants";
 import { sendLeadEmail } from "../utils/email";
 
-const demoQuestions = [
-  "What are your hours?",
-  "How much are the bins?",
-  "Where are you located?",
+const websiteQuestions = [
+  "I need a website for my business. Where do I start?",
+  "I already have a website, but it looks outdated. Can I discuss a redesign?",
+  "Can I get a quote for a new website?",
+  "My website isn’t working properly. Who can help?",
+  "What information should I prepare before discussing my project?",
+];
+
+const receptionistQuestions = [
+  "Are you an AI assistant?",
+  "Can I speak to the owner?",
+  "Can you connect me to a real person?",
+  "Can I leave a message?",
+  "Can the owner call me back?",
 ];
 
 const steps = [
@@ -82,33 +92,6 @@ const faqs = [
   {
     question: "Can I update the info?",
     answer: "Yes. Text or email changes anytime and we will update the agent knowledge quickly.",
-  },
-];
-
-const transcript = [
-  {
-    speaker: "Caller",
-    text: "Hi, what are your hours today?",
-  },
-  {
-    speaker: "PickUp AI",
-    text: "Loot Bins PEI is open Saturday through Thursday from 10 AM to 7 PM, and Friday from 9 AM to 1 PM for clearance day.",
-  },
-  {
-    speaker: "Caller",
-    text: "Perfect. How much are the bins?",
-  },
-  {
-    speaker: "PickUp AI",
-    text: "The store follows a weekly price-drop cycle, so pricing gets lower as the week goes on after the Saturday reset.",
-  },
-  {
-    speaker: "Caller",
-    text: "Where are you located?",
-  },
-  {
-    speaker: "PickUp AI",
-    text: "You can find Loot Bins PEI at 13 Glen Stewart Drive in Stratford, Prince Edward Island.",
   },
 ];
 
@@ -311,8 +294,8 @@ export default function PickUpAI() {
                 <div className="mt-8 rounded-[1.75rem] bg-slate-950 p-5 text-white">
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Caller preview</p>
                   <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-200">
-                    <p>"Hi, are you open today and where are you located?"</p>
-                    <p className="text-slate-400">PickUp AI answers instantly, confirms your hours, and offers the address without sending the caller to voicemail.</p>
+                    <p>"I need a website for my business. Where do I start?"</p>
+                    <p className="text-slate-400">PickUp AI answers instantly, learns what the caller needs, and helps them take the next step without going to voicemail.</p>
                   </div>
                 </div>
               </div>
@@ -364,54 +347,50 @@ export default function PickUpAI() {
         </section>
 
         <section id="demo" className="scroll-mt-28 px-4 py-16 sm:px-6 sm:py-24">
-          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-            <div className="rounded-[2rem] bg-slate-900 p-8 text-white shadow-xl shadow-slate-900/10">
-              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-white">
-                <PhoneIcon />
-              </div>
-              <h2 className="mt-6 text-[1.85rem] font-black sm:text-3xl">Call {DEMO_PHONE}</h2>
-              <p className="mt-4 text-slate-300">Hear a live demo built around the kind of questions Island businesses answer all day long.</p>
-              <div className="mt-8 rounded-3xl bg-white/5 p-5">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Ask it</p>
-                <ul className="mt-4 space-y-3 text-base font-medium text-slate-100">
-                  {demoQuestions.map((question) => (
-                    <li key={question}>"{question}"</li>
-                  ))}
-                </ul>
-              </div>
-              <a href={`tel:${DEMO_PHONE_RAW}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
-                Hear It Live
-              </a>
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-8 max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-primary-700">Live PEI Web Studio Demo</p>
+              <h2 className="mt-3 text-[1.9rem] font-black leading-tight text-slate-900 sm:text-4xl lg:text-5xl">Call and test the AI receptionist yourself</h2>
+              <p className="mt-4 text-[0.95rem] leading-relaxed text-slate-500 sm:text-lg">Give it a try—ask about a website project, request a quote, or ask to speak to the owner.</p>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-premium sm:p-8">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-black uppercase tracking-[0.18em] text-primary-700">Demo Transcript</p>
-                  <h3 className="mt-2 text-[1.45rem] font-black text-slate-900 sm:text-2xl">LOOTBINS PEI sample call</h3>
+            <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="rounded-[2rem] bg-slate-900 p-8 text-white shadow-xl shadow-slate-900/10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-white">
+                  <PhoneIcon />
                 </div>
-                <a href="https://www.lootbinscanada.com/" target="_blank" rel="noreferrer" className="text-sm font-bold text-primary-700 hover:text-primary-800">
-                  View LOOTBINS PEI
+                <h3 className="mt-6 text-[1.85rem] font-black sm:text-3xl">Call {DEMO_PHONE}</h3>
+                <p className="mt-4 text-slate-300">You’ll reach the AI receptionist for PEI Web Studio and hear how it handles a real business conversation.</p>
+                <a href={`tel:${DEMO_PHONE_RAW}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-slate-900 transition hover:bg-primary-50 sm:w-auto">
+                  Call the Live Demo
+                </a>
+                <a href="https://peiwebstudio.ca" target="_blank" rel="noreferrer" className="mt-5 block text-sm font-bold text-primary-300 hover:text-primary-200">
+                  Visit peiwebstudio.ca →
                 </a>
               </div>
-              <div className="mt-6 space-y-4">
-                {transcript.map((entry, index) => (
-                  <div
-                    key={`${entry.speaker}-${index}`}
-                    className={`max-w-[92%] rounded-3xl px-5 py-4 text-sm leading-relaxed sm:max-w-[44rem] sm:text-base ${
-                      entry.speaker === "PickUp AI"
-                        ? "bg-primary-50 text-slate-700"
-                        : "ml-auto bg-slate-100 text-slate-800"
-                    }`}
-                  >
-                    <p className="mb-1 text-xs font-black uppercase tracking-[0.16em] text-slate-400">{entry.speaker}</p>
-                    <p>{entry.text}</p>
-                  </div>
-                ))}
+
+              <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-premium sm:p-8">
+                <p className="text-sm font-black uppercase tracking-[0.18em] text-primary-700">Questions to Try</p>
+                <h3 className="mt-2 text-[1.45rem] font-black text-slate-900 sm:text-2xl">See how the receptionist handles real requests</h3>
+                <div className="mt-6 grid gap-5 xl:grid-cols-2">
+                  {[
+                    ["About their website", websiteQuestions],
+                    ["Testing the receptionist", receptionistQuestions],
+                  ].map(([title, questions]) => (
+                    <div key={title} className="rounded-3xl bg-slate-50 p-5">
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{title}</p>
+                      <ul className="mt-4 space-y-3 text-sm leading-relaxed text-slate-700">
+                        {questions.map((question) => (
+                          <li key={question} className="flex gap-3">
+                            <span className="font-black text-primary-600">→</span>
+                            <span>“{question}”</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <p className="mt-6 text-sm text-slate-500">
-                Transcript uses verified LOOTBINS PEI location and hours, with pricing language based on their published weekly price-drop cycle.
-              </p>
             </div>
           </div>
         </section>
@@ -467,9 +446,9 @@ export default function PickUpAI() {
             <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center">
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.18em] text-[#9E3E2E]">See It in a Real Business</p>
-                <h2 className="mt-3 text-[1.9rem] font-black text-slate-900 sm:text-4xl">A working PEI demo you can call today</h2>
+                <h2 className="mt-3 text-[1.9rem] font-black text-slate-900 sm:text-4xl">Meet the PEI Web Studio receptionist</h2>
                 <p className="mt-4 text-slate-600 leading-relaxed">
-                  The demo is built around a real Stratford business—not a polished recording. Call it, interrupt it, and ask follow-up questions the way a customer would.
+                  This is a live AI receptionist built around a real website business—not a polished recording. Call it, interrupt it, and ask follow-up questions the way a customer would.
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
@@ -479,7 +458,7 @@ export default function PickUpAI() {
                 </div>
                 <div className="rounded-3xl bg-white p-6 shadow-sm">
                   <p className="text-3xl font-black text-slate-900">24/7</p>
-                  <p className="mt-2 text-sm text-slate-500">availability for customers and tourists</p>
+                  <p className="mt-2 text-sm text-slate-500">availability for website prospects and clients</p>
                 </div>
                 <div className="rounded-3xl bg-white p-6 shadow-sm">
                   <p className="text-3xl font-black text-slate-900">Local</p>
@@ -489,18 +468,18 @@ export default function PickUpAI() {
             </div>
             <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
               <a
-                href="https://www.lootbinscanada.com/"
+                href="https://peiwebstudio.ca"
                 target="_blank"
                 rel="noreferrer"
                 className="flex flex-col items-start gap-4 rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 sm:flex-row sm:items-center"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-900 text-lg font-black text-white">
-                  LB
+                  PW
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-primary-700">Live demo business</p>
-                  <p className="mt-1 text-xl font-black text-slate-900">LOOTBINS PEI</p>
-                  <p className="mt-1 text-sm text-slate-500">Stratford liquidation store with weekly drop traffic and high repeat questions.</p>
+                  <p className="mt-1 text-xl font-black text-slate-900">PEI Web Studio</p>
+                  <p className="mt-1 text-sm text-slate-500">A live receptionist for website projects, quote requests, support questions, and owner callbacks.</p>
                 </div>
               </a>
               <button onClick={() => scrollToSection("contact")} className="rounded-[1.75rem] bg-slate-900 px-6 py-5 text-left text-white transition hover:bg-primary-800 lg:max-w-sm">

@@ -80,10 +80,10 @@ export default function PickUpAIPromo() {
                 ))}
               </div>
               <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-xs font-black text-white">LB</div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-xs font-black text-white">PW</div>
                 <div>
-                  <p className="text-xs font-black text-white">Lootbins PEI — first live customer</p>
-                  <p className="text-xs text-slate-400">Stratford liquidation store, high repeat-question volume</p>
+                  <p className="text-xs font-black text-white">PEI Web Studio — live demo</p>
+                  <p className="text-xs text-slate-400">Website inquiries, quote requests, and owner callbacks</p>
                 </div>
               </div>
             </div>
