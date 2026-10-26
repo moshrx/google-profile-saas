@@ -12,6 +12,7 @@ const LegalModal = lazy(() => import("./components/LegalModal"));
 const FloatingBadge = lazy(() => import("./components/FloatingBadge"));
 const GrantQuiz = lazy(() => import("./components/GrantQuiz"));
 const PickUpAI = lazy(() => import("./components/PickUpAI"));
+const GeoAuditPage = lazy(() => import("./components/GeoAuditPage"));
 
 // Import utilities (these are smaller, can be loaded eagerly)
 import { generateProfile } from "./utils/generateProfile";
@@ -162,6 +163,11 @@ function AppContent() {
           <Route path="/pickupai" element={
             <Suspense fallback={<PageLoader />}>
               <PickUpAI />
+            </Suspense>
+          } />
+          <Route path="/geo-audit" element={
+            <Suspense fallback={<PageLoader />}>
+              <GeoAuditPage />
             </Suspense>
           } />
           <Route path="/admin/leads" element={

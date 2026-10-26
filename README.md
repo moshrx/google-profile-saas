@@ -1,16 +1,45 @@
-# React + Vite
+# ListedPEI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ListedPEI is a React/Vite lead-generation site for Prince Edward Island businesses. It includes a Google Business Profile kit generator, a free AI Visibility/GEO readiness audit, a grant quiz and assistant, and PickUp AI lead-generation pages.
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
 
-## React Compiler
+The Vite development server renders the frontend. Files in `api/` are Vercel serverless functions and require a Vercel-compatible local runtime or deployment for end-to-end API testing.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Environment variables
 
-## Expanding the ESLint configuration
+Add these locally and in the Vercel project settings:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```env
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-6-luna
+EMAILJS_SERVICE_ID=
+EMAILJS_KIT_TEMPLATE_ID=
+EMAILJS_LEAD_TEMPLATE_ID=
+EMAILJS_PUBLIC_KEY=
+EMAILJS_PRIVATE_KEY=
+SUPPORT_EMAIL=peiwebstudio@gmail.com
+```
+
+`OPENAI_API_KEY` is server-only. Never rename it to `VITE_OPENAI_API_KEY`; Vite-prefixed variables are shipped to the browser.
+
+All website email forms post to `POST /api/send-email`. The server selects the permitted EmailJS template, validates recipients and fields, rate-limits submissions, and forces lead notifications to `SUPPORT_EMAIL`. Existing `VITE_EMAILJS_*` variables remain supported as a migration fallback, but new deployments should use the server-only names shown above.
+
+## GEO audit architecture
+
+`POST /api/geo-audit` validates and crawls the submitted public website, scores objective technical signals, and sends a compact evidence package to OpenAI for structured semantic analysis. The model does not determine the full score, and the product does not claim to prove live rankings or citations.
+
+Security controls include public-address validation, redirect checks, crawl limits, response-size limits, timeouts, basic rate limiting, and short-lived in-memory result caching.
+
+## Verification
+
+```bash
+npm run lint
+npm run build
+```

@@ -1,7 +1,7 @@
 // Service Worker for ListedPEI
 // Provides caching for offline support and faster repeat visits
 
-const CACHE_NAME = 'listedpei-v1';
+const CACHE_NAME = 'listedpei-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -49,14 +49,10 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Return cached response if available
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // Otherwise fetch from network
-      return fetch(event.request)
+    // Navigations are network-first so new deployments are visible immediately.
+    (event.request.mode === 'navigate'
+      ? fetch(event.request).catch(() => caches.match('/index.html'))
+      : caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request)))
         .then((response) => {
           // Don't cache non-successful responses
           if (!response || response.status !== 200 || response.type !== 'basic') {
@@ -67,7 +63,7 @@ self.addEventListener('fetch', (event) => {
           const responseToCache = response.clone();
           
           caches.open(CACHE_NAME).then((cache) => {
-            // Only cache static assets and API calls
+            // Only cache versioned static assets.
             if (event.request.url.match(/\.(js|css|png|jpg|jpeg|svg|gif|woff|woff2)$/)) {
               cache.put(event.request, responseToCache);
             }
@@ -80,7 +76,6 @@ self.addEventListener('fetch', (event) => {
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
-        });
-    })
+        })
   );
 });

@@ -346,7 +346,7 @@ export default function StepForm({ onSubmit, initialWantsMockup = false }) {
                       onBlur={() => handleBlur("website")}
                     />
                     {fieldError("website") && <p className="mt-1 text-xs sm:text-sm text-red-500">{fieldError("website")}</p>}
-                    <p className="mt-1 text-xs text-slate-400">If you have an existing site, we'll pull details from it.</p>
+                    <p className="mt-1 text-xs text-slate-400">Your website helps us understand your existing online presence.</p>
                   </div>
                   
                   <div className="mt-2 flex flex-col gap-2 p-3 sm:p-4 bg-primary-50/50 border border-primary-100 rounded-xl relative group">
@@ -480,7 +480,7 @@ export default function StepForm({ onSubmit, initialWantsMockup = false }) {
 
         {/* Footer note */}
         <p className="text-center text-xs text-slate-400 mt-4 sm:mt-6 px-4">
-          Your data is never stored — everything runs in your browser.
+          Your details are securely processed to generate your kit and are not stored in a ListedPEI database.
         </p>
       </div>
     </div>

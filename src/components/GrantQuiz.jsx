@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import emailjs from '@emailjs/browser';
 import { useToast } from "../hooks/useToast";
 import { ToastContainer } from "./Toast";
 import Logo from "./Logo";
@@ -8,6 +7,7 @@ import SiteFooter from "./SiteFooter";
 import LegalModal from "./LegalModal";
 import { PrivacyPolicyContent, TermsOfServiceContent } from "./LegalContent";
 import { SUPPORT_EMAIL } from '../utils/constants';
+import { sendKitEmail, sendLeadEmail } from '../utils/email';
 import GrantChat from "./GrantChat";
 
 const TOTAL_STEPS = 5;
@@ -204,18 +204,6 @@ export default function GrantQuiz() {
     const matched = calculateMatchedGrants(answers);
     setMatchedGrants(matched);
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const leadTemplateId = import.meta.env.VITE_EMAILJS_LEAD_TEMPLATE_ID;
-    const kitTemplateId = import.meta.env.VITE_EMAILJS_KIT_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-    if (!serviceId || serviceId === "your_service_id") {
-      addToast("EmailJS not configured. Please check .env file.", "error");
-      // Still show results even if email fails
-      setShowResults(true);
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -245,7 +233,7 @@ export default function GrantQuiz() {
       };
 
       // Send lead notification to admin
-      await emailjs.send(serviceId, leadTemplateId, templateParams, { publicKey });
+      await sendLeadEmail(templateParams);
 
       // Send grant results to the user using the kit template
       const grantList = matched.length > 0
@@ -254,7 +242,7 @@ export default function GrantQuiz() {
 
       const nextSteps = `1. Review your matched grants and visit the apply links above.\n2. Prepare your business plan and financial statements.\n3. Get quotes for your project (most grants require this).\n4. Submit your application at princeedwardisland.ca\n\nNeed help applying? Email us at ${SUPPORT_EMAIL} — we help PEI businesses with grant applications.`;
 
-      await emailjs.send(serviceId, kitTemplateId, {
+      await sendKitEmail({
         to_email: email,
         to_name: "there",
         from_name: "GrantReady PEI",
@@ -276,7 +264,7 @@ export default function GrantQuiz() {
         keywords_longtail: "-",
         photo_tips: "-",
         categories: matched.map(g => g.name).join(", ") || "No matches",
-      }, { publicKey });
+      });
 
       // Save to localStorage for admin
       let leads = [];
@@ -297,8 +285,8 @@ export default function GrantQuiz() {
       addToast("Your results have been sent to your email!");
       setShowResults(true);
     } catch (err) {
-      console.error("EmailJS Error:", err);
-      addToast("Failed to send email. Please try again.", "error");
+      console.error("Grant email error:", err);
+      addToast(err.message || "Failed to send email. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
