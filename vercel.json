@@ -1,7 +1,28 @@
 {
   "version": 2,
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "src": "/geo-audit/?",
+      "dest": "/geo-audit/index.html"
+    },
+    {
+      "src": "/grants/?",
+      "dest": "/grants/index.html"
+    },
+    {
+      "src": "/pickupai/?",
+      "dest": "/pickupai/index.html"
+    },
+    {
+      "src": "/admin/leads/?",
+      "dest": "/admin/leads/index.html"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

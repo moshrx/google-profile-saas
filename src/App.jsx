@@ -1,6 +1,8 @@
 import React, { useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
+import PageMetadata from "./components/PageMetadata";
+
 // Lazy load components for code splitting
 const StepForm = lazy(() => import("./components/StepForm"));
 const Loading = lazy(() => import("./components/LoadingScreen"));
@@ -153,6 +155,7 @@ function AppContent() {
 
   return (
     <div className="App font-display min-h-screen flex flex-col">
+      <PageMetadata />
       <ErrorBoundary>
         <Routes>
           <Route path="/grants" element={

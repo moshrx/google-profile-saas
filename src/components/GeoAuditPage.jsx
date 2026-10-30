@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
 
@@ -172,11 +172,6 @@ function AuditResults({ report, onOpenLegal }) {
 
 export default function GeoAuditPage({ onOpenLegal }) {
   const [report, setReport] = useState(null);
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = "Will ChatGPT Recommend Your Business? Free Check | ListedPEI";
-    return () => { document.title = previousTitle; };
-  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#FAFBFF]">
