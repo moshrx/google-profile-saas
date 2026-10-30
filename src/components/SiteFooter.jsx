@@ -70,7 +70,7 @@ export default function SiteFooter({ variant = 'listedpei', simple = false, onOp
                 <>
                   <li><Link to="/#features" className="hover:text-primary-600 transition-colors">Features</Link></li>
                   <li><Link to="/#how-it-works" className="hover:text-primary-600 transition-colors">How it works</Link></li>
-                  <li><Link to="/geo-audit" className="hover:text-primary-600 transition-colors">Free AI Visibility Audit</Link></li>
+                  <li><Link to="/geo-audit" className="hover:text-primary-600 transition-colors">Free ChatGPT Visibility Check</Link></li>
                   <li><Link to="/grants" className="hover:text-primary-600 transition-colors">Free Grant Check</Link></li>
                   <li><Link to="/pickupai" className="hover:text-primary-600 transition-colors">PickUp AI</Link></li>
                   <li><Link to="/#faq" className="hover:text-primary-600 transition-colors">FAQ</Link></li>

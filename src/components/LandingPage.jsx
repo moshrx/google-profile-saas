@@ -134,7 +134,7 @@ export default function LandingPage({ onGetStarted }) {
           <div className="flex flex-col items-center gap-1 text-center sm:hidden">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse">New</span>
-              <span className="text-xs font-black">Free AI Visibility Audit</span>
+              <span className="text-xs font-black">Free ChatGPT Visibility Check</span>
             </div>
             <p className="text-[11px] font-medium text-white/90 leading-tight">
               Will ChatGPT recommend your business? Find out free →
@@ -144,7 +144,7 @@ export default function LandingPage({ onGetStarted }) {
           <div className="hidden sm:flex items-center justify-center gap-3">
             <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full animate-pulse shrink-0">New</span>
             <p className="text-sm font-bold">
-              Can ChatGPT, Google AI and Copilot understand your business? <span className="font-black">Find out free.</span>
+              Will ChatGPT recommend your business? <span className="font-black">Find out free.</span>
             </p>
             <span className="shrink-0 bg-white text-[#C34A36] font-black text-xs px-3 py-1 rounded-full whitespace-nowrap">
               Run Free Audit →
@@ -168,7 +168,7 @@ export default function LandingPage({ onGetStarted }) {
                 PickUp AI
               </Link>
               <Link to="/geo-audit" className="nav-link text-primary-700 font-bold">
-                AI Visibility Audit
+                ChatGPT Visibility Check
               </Link>
             </div>
 
@@ -216,7 +216,7 @@ export default function LandingPage({ onGetStarted }) {
                   onClick={() => setMobileMenuOpen(false)}
                   className="nav-link py-3 px-4 rounded-xl hover:bg-primary-50 text-left text-primary-700 font-bold"
                 >
-                  Free AI Visibility Audit
+                  Free ChatGPT Visibility Check
                 </Link>
                 <hr className="border-slate-200 my-2" />
                 <button
