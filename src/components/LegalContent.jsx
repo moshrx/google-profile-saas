@@ -1,27 +1,28 @@
 export function PrivacyPolicyContent() {
   return (
     <div className="text-sm sm:text-base space-y-5 text-slate-600 leading-relaxed">
-      <p className="text-xs text-slate-400">Last updated: April 28, 2026</p>
+      <p className="text-xs text-slate-400">Last updated: October 29, 2026</p>
 
       <p>ListedPEI ("we", "us", "our") is operated by PEI Web Studio and serves small businesses in Prince Edward Island, Canada. This policy explains what data we collect, why, and how we protect it.</p>
 
       <p className="font-bold text-slate-900 pt-2">1. Information You Provide</p>
-      <p>When you use our Google Profile Kit generator or AI Visibility Audit, you provide business information or a public website URL. Relevant information is securely processed through our server and OpenAI to generate the requested results and is <strong>not stored in a ListedPEI database</strong>. If you submit contact information to receive a kit, unlock an action plan, or book a consultation, it is sent to us via EmailJS and may also be stored locally in your browser.</p>
+      <p>For the free ChatGPT visibility check, you enter a public business website URL. Our server may retrieve up to six public pages and examine their text, titles, headings, structured data, crawler access and other website signals. We send selected page text and website signals to <strong>OpenAI&apos;s API, which powers the ChatGPT-based analysis</strong>, to produce a readiness score and suggestions. The check does not require your name or email. Please enter only a website you are authorized to check; do not submit private pages or sensitive personal information.</p>
+      <p>If you request the full action plan, we collect the name, business email, optional phone number and business name you enter. We send those details, the website URL, score and selected findings through EmailJS to PEI Web Studio for follow-up. These contact details are not included in the OpenAI website-analysis request. Other ListedPEI tools may collect business details and contact information as described in their forms.</p>
 
       <p className="font-bold text-slate-900 pt-2">2. Browser Storage</p>
-      <p>We use your browser's <strong>localStorage</strong> to remember lead submissions and a visitor count badge (retained for up to 7 days). We use <strong>sessionStorage</strong> only for temporary admin authentication within a single browser session. No data is ever written to a third-party database by us.</p>
+      <p>We use your browser&apos;s <strong>localStorage</strong> to remember some lead submissions and a visitor count badge (retained for up to 7 days). We use <strong>sessionStorage</strong> for temporary admin authentication within a single browser session. Audit results may also be cached in temporary server memory for up to 30 minutes to avoid repeating the same check. OpenAI and EmailJS process information under their own service practices.</p>
 
       <p className="font-bold text-slate-900 pt-2">3. Cookies</p>
       <p>We do not use tracking, advertising, or analytics cookies. The only browser storage we write is described in Section 2 above.</p>
 
       <p className="font-bold text-slate-900 pt-2">4. Third-Party Services</p>
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong>OpenAI</strong> — relevant business inputs and public website content are processed through OpenAI's API to generate content and audit recommendations. See <a href="https://openai.com/policies/privacy-policy/" target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">OpenAI's Privacy Policy</a>.</li>
+        <li><strong>OpenAI</strong> — selected public website content and signals are processed through OpenAI&apos;s API for the ChatGPT-based check. OpenAI states that API data is not used to train its models by default, and that standard abuse-monitoring logs may be kept for up to 30 days, subject to its stated exceptions. See <a href="https://developers.openai.com/api/docs/guides/your-data" target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">OpenAI&apos;s API data controls</a>.</li>
         <li><strong>EmailJS</strong> — used to deliver your kit and lead notifications by email. See <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">EmailJS's Privacy Policy</a>.</li>
       </ul>
 
       <p className="font-bold text-slate-900 pt-2">5. Data Retention</p>
-      <p>We do not operate a backend database. Any lead data collected exists only in your local browser storage and in the email inbox of PEI Web Studio. You can clear your browser data at any time to remove locally stored information.</p>
+      <p>We do not keep a permanent ListedPEI database of audit reports. Temporary audit cache entries expire after 30 minutes. Contact details and audit findings sent for a full action plan remain in PEI Web Studio&apos;s email inbox until they are no longer needed for the enquiry or you request deletion, subject to applicable obligations. Clearing browser data removes locally stored information but does not remove emails or provider records.</p>
 
       <p className="font-bold text-slate-900 pt-2">6. Your Rights</p>
       <p>You may request deletion of any email correspondence we hold by contacting us at <a href="mailto:peiwebstudio@gmail.com" className="text-primary-600 underline">peiwebstudio@gmail.com</a>. We will respond within 5 business days.</p>
@@ -130,15 +131,15 @@ export function PickUpAITermsContent() {
 export function TermsOfServiceContent() {
   return (
     <div className="text-sm sm:text-base space-y-5 text-slate-600 leading-relaxed">
-      <p className="text-xs text-slate-400">Last updated: April 28, 2026</p>
+      <p className="text-xs text-slate-400">Last updated: October 29, 2026</p>
 
       <p>These Terms of Service govern your use of ListedPEI and any related services operated by PEI Web Studio. By accessing or using the service you agree to be bound by these terms.</p>
 
       <p className="font-bold text-slate-900 pt-2">1. The Service</p>
-      <p>ListedPEI is a free AI-powered tool that generates Google Business Profile content for small businesses in Prince Edward Island. The service includes a profile kit generator, grant eligibility quiz, and promotional content for PickUp AI.</p>
+      <p>ListedPEI provides a Google Business Profile kit generator, a grant eligibility quiz, and a free website visibility check for small businesses in Prince Edward Island. It also contains information about PickUp AI. The website check reviews public pages and uses OpenAI&apos;s API, the technology behind ChatGPT, to help prepare its score and recommendations.</p>
 
       <p className="font-bold text-slate-900 pt-2">2. AI-Generated Content</p>
-      <p>Profile content and audit recommendations may be generated with OpenAI models. While we tune our prompts for local SEO and GEO analysis, we make no guarantee that the output is factually correct, complete, or suitable for your specific business. <strong>You are responsible for reviewing, editing, and verifying all generated content before publishing it</strong> to your Google Business Profile or any other platform.</p>
+      <p>Profile content and audit recommendations may be generated with OpenAI models. The website score is an assessment of publicly visible readiness signals; <strong>it does not test or guarantee whether ChatGPT, Google, or any other service currently recommends, cites, or ranks your business</strong>. Results can be incomplete or wrong, and may change as your website and AI systems change. Review and verify all generated content and recommendations before relying on or publishing them.</p>
 
       <p className="font-bold text-slate-900 pt-2">3. No Guarantee of Results</p>
       <p>We do not guarantee any improvement in search rankings, visibility, or revenue as a result of using content generated by ListedPEI. SEO outcomes depend on many factors outside our control.</p>
