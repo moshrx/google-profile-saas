@@ -1,7 +1,7 @@
 // Service Worker for ListedPEI
 // Provides caching for offline support and faster repeat visits
 
-const CACHE_NAME = 'listedpei-v2';
+const CACHE_NAME = 'listedpei-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

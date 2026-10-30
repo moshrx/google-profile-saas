@@ -6,7 +6,7 @@
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import PickUpAILogo from './PickUpAILogo';
-import { SUPPORT_EMAIL } from '../utils/constants';
+import { SUPPORT_EMAIL, DEMO_PHONE, DEMO_PHONE_RAW } from '../utils/constants';
 
 export default function SiteFooter({ variant = 'listedpei', simple = false, onOpenLegal }) {
   const year = new Date().getFullYear();
@@ -23,7 +23,8 @@ export default function SiteFooter({ variant = 'listedpei', simple = false, onOp
           <p className="text-slate-400 text-xs sm:text-sm font-medium text-center sm:text-left">
             &copy; {year} {isPickup ? 'PickUp AI by ListedPEI' : 'ListedPEI'}. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6">
+            <a href={`tel:${DEMO_PHONE_RAW}`} className="text-sm font-bold text-primary-600">{DEMO_PHONE}</a>
             <button onClick={() => onOpenLegal?.('privacy')} className="text-slate-400 hover:text-primary-600 text-xs sm:text-sm font-medium transition-colors">Privacy</button>
             <button onClick={() => onOpenLegal?.('terms')} className="text-slate-400 hover:text-primary-600 text-xs sm:text-sm font-medium transition-colors">Terms</button>
             <a href="https://peiwebstudio.ca" target="_blank" rel="noopener noreferrer" className="text-slate-900 font-bold border-b-2 border-primary-400 hover:text-primary-600 transition-colors text-xs sm:text-sm">
@@ -53,6 +54,8 @@ export default function SiteFooter({ variant = 'listedpei', simple = false, onOp
             <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-3 inline-block text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors">
               {SUPPORT_EMAIL}
             </a>
+            <a href={`tel:${DEMO_PHONE_RAW}`} className="mt-3 block text-sm font-bold text-primary-600 hover:text-primary-700">{DEMO_PHONE}</a>
+            <p className="mt-3 text-sm text-slate-500">Serving businesses across Prince Edward Island, Canada.</p>
           </div>
 
           {/* Product links */}
@@ -70,7 +73,7 @@ export default function SiteFooter({ variant = 'listedpei', simple = false, onOp
                 <>
                   <li><Link to="/#features" className="hover:text-primary-600 transition-colors">Features</Link></li>
                   <li><Link to="/#how-it-works" className="hover:text-primary-600 transition-colors">How it works</Link></li>
-                  <li><Link to="/geo-audit" className="hover:text-primary-600 transition-colors">Free AI Visibility Audit</Link></li>
+                  <li><Link to="/geo-audit" className="hover:text-primary-600 transition-colors">Free ChatGPT Visibility Check</Link></li>
                   <li><Link to="/grants" className="hover:text-primary-600 transition-colors">Free Grant Check</Link></li>
                   <li><Link to="/pickupai" className="hover:text-primary-600 transition-colors">PickUp AI</Link></li>
                   <li><Link to="/#faq" className="hover:text-primary-600 transition-colors">FAQ</Link></li>

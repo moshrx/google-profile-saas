@@ -47,3 +47,9 @@ The crawler first identifies itself as ListedPEI. If a homepage returns HTTP 403
 npm run lint
 npm run build
 ```
+
+### Search metadata and static pages
+
+`npm run build` prerenders the four public routes to HTML, including their visible content, phone links and route-specific metadata. Vercel routes serve these files before the SPA fallback. The browser mounts the interactive app over this initial content.
+
+Update `src/utils/seo.js` for page titles, descriptions and structured data; update `src/utils/constants.js` for the shared phone number. Keep service-area claims consistent with the visible footer. The admin route is emitted with `noindex` (this is not access control).
