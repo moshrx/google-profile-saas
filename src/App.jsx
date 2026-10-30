@@ -167,7 +167,7 @@ function AppContent() {
           } />
           <Route path="/geo-audit" element={
             <Suspense fallback={<PageLoader />}>
-              <GeoAuditPage />
+              <GeoAuditPage onOpenLegal={setActiveModal} />
             </Suspense>
           } />
           <Route path="/admin/leads" element={

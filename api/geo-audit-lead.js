@@ -8,10 +8,11 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: "Submission limit reached. Please try again later." });
   }
 
-  const { name, email, phone, businessName, website, score, issues } = req.body || {};
+  const { name, email, phone, businessName, website, score, issues, consent } = req.body || {};
   if (!name?.trim() || !/^\S+@\S+\.\S+$/.test(email || "")) {
     return res.status(400).json({ error: "Enter your name and a valid business email." });
   }
+  if (consent !== true) return res.status(400).json({ error: "Consent is required to send your details for follow-up." });
 
   try {
     await sendTemplateEmail("lead", {
